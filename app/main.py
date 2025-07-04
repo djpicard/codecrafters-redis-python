@@ -21,10 +21,13 @@ async def main():
 
     # create an asyncio server
     server = await asyncio.start_server(handler, "127.0.0.1", port=6379)
+    logger.info(f"Server is up: {server.is_serving()}")
+
     async with server:
         await server.serve_forever()
-        await logger.info("Shutting down server")
+        logger.info("Shutting down server")
     # report the details of the server
+
     logger.info(f"Server is up: {server.is_serving()}")
 
 
@@ -40,7 +43,7 @@ async def handler(reader, writer):
     await writer.drain()
 
     writer.close()
-    logger.info("Closing connection")
+    logger.info("Closing writer connection")
 
 
 if __name__ == "__main__":

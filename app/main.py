@@ -30,7 +30,8 @@ async def main():
 
 async def handler(reader, writer):
     """connection handler"""
-    message = await reader.read(1024).decode()
+    data = await reader.read(1024)
+    message = data.decode()
     logger.info(f"Received message: {message}")
 
     writer.write("+PONG\r\n")

@@ -15,9 +15,6 @@ class TestHttpServer(unittest.TestCase):
         self.server_thread = Thread(target=main)
         self.server_thread.daemon = True
         self.server_thread.start()
-        import time
-
-        time.sleep(1)
 
     def test_root_path(self):
         """testing main connection"""

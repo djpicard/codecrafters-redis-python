@@ -34,7 +34,7 @@ async def handler(reader, writer):
     message = data.decode()
     logger.info(f"Received message: {message}")
 
-    writer.write("+PONG\r\n")
+    writer.write(b"+PONG\r\n")
     await writer.drain()
 
     logger.info("Sent data back")

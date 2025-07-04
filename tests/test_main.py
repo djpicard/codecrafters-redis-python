@@ -1,10 +1,17 @@
-import unittest
+"""test suite for redis app"""
+
 import socket
+import unittest
 from threading import Thread
-from main import main
+
+from app.main import main
+
 
 class TestHttpServer(unittest.TestCase):
+    """testing http server functions"""
+
     def setUp(self):
+        """setup connection threads"""
         self.server_thread = Thread(target=main)
         self.server_thread.daemon = True
         self.server_thread.start()
@@ -13,7 +20,11 @@ class TestHttpServer(unittest.TestCase):
         time.sleep(1)
 
     def test_root_path(self):
+        """testing main connection"""
         with socket.create_connection(("localhost", 6379), timeout=1) as client_socket:
+            client_socket.sendall(b"*1\r\n$4\r\nping\r\n")
+            response = client_socket.recv(1024)
+            self.assertEqual(response, b"+PONG\r\n")
             client_socket.sendall(b"*1\r\n$4\r\nping\r\n")
             response = client_socket.recv(1024)
             self.assertEqual(response, b"+PONG\r\n")
@@ -35,4 +46,4 @@ class TestHttpServer(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()     
+    unittest.main()

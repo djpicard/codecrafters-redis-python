@@ -1,9 +1,0 @@
-- id: pytest
-  name: pytest
-  description: 'Run tests with pytest'
-  entry: pytest
-  language: python
-  types: [python]
-  require_serial: true
-  pass_filenames: false
-  always_run: true

@@ -33,14 +33,23 @@ async def main():
 
 async def handler(reader, writer):
     """connection handler"""
-    data = await reader.read(1024)
-    message = data.decode()
-    print(f"Received message: {message}")
 
-    resp = "+PONG\r\n"
-    print(f"Sending responce: {resp}")
-    writer.write(resp.encode())
-    await writer.drain()
+    addr = writer.get_extra_info("peername")
+    print(f"Connected with {addr}")
+
+    while True:
+        data = await reader.read(1024)
+        if not data:
+            print(f"Disconnected from {addr}")
+            break
+
+        message = data.decode()
+        print(f"Received message: {message}")
+
+        resp = "+PONG\r\n"
+        print(f"Sending responce: {resp}")
+        writer.write(resp.encode())
+        await writer.drain()
 
     print("Closing writer connection")
     writer.close()

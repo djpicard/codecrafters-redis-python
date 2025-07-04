@@ -34,11 +34,13 @@ async def handler(reader, writer):
     message = data.decode()
     logger.info(f"Received message: {message}")
 
-    writer.write(b"+PONG\r\n")
+    resp = "+PONG\r\n"
+    logger.info(f"Sending responce: {resp}")
+    writer.write(resp.encode())
     await writer.drain()
 
-    logger.info("Sent data back")
     writer.close()
+    logger.info("Closing connection")
 
 
 if __name__ == "__main__":

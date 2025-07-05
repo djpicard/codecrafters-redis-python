@@ -4,54 +4,56 @@ import asyncio
 import logging
 import sys
 
-# import socket  # noqa: F401
+from app import parser
 
+# import socket  # noqa: F401
 logger = logging.getLogger(__name__)
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"
 logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
 
 
+async def start_server():
+    """entrypoint for pytests"""
+    server = await asyncio.start_server(handler, "127.0.0.1", port=6379)
+    return server
+
+
 async def main():
     """main function to start our redis journey"""
     # You can use print statements as follows for debugging, they'll be visible when running tests.
-    print("Logs from your program will appear here!")
-
-    # switching from sockets to asyncio server
-    # server_socket = socket.create_server(("localhost", 6379), reuse_port=True)
-
+    logger.info("Logs from your program will appear here!")
     # create an asyncio server
     server = await asyncio.start_server(handler, "127.0.0.1", port=6379)
-    print(f"Server is up: {server.is_serving()}")
+    logger.info(f"Server is up: {server.is_serving()}")
+    # return server
 
     async with server:
         await server.serve_forever()
-        print("Shutting down server")
+        logger.info("Shutting down server")
     # report the details of the server
-
-    print(f"Server is up: {server.is_serving()}")
 
 
 async def handler(reader, writer):
     """connection handler"""
 
     addr = writer.get_extra_info("peername")
-    print(f"Connected with {addr}")
+    logger.info(f"Connected with {addr}")
 
     while True:
         data = await reader.read(1024)
         if not data:
-            print(f"Disconnected from {addr}")
+            logger.info(f"Disconnected from {addr}")
             break
 
         message = data.decode()
-        print(f"Received message: {message}")
+        logger.info(f"Received message: {message}")
 
-        resp = "+PONG\r\n"
-        print(f"Sending responce: {resp}")
+        resp = parser.parse(message)
+        logger.info(f"Sending responce: {resp}")
         writer.write(resp.encode())
         await writer.drain()
 
-    print("Closing writer connection")
+    logger.info("Closing writer connection")
     writer.close()
     await writer.wait_closed()
 

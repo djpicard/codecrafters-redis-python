@@ -3,8 +3,8 @@
 import logging
 import sys
 
-import app.commands as cmd
-import app.encoder as encoder
+from app import commands as cmd
+from app import encoder
 
 logger = logging.getLogger(__name__)
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"

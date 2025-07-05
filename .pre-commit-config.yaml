@@ -40,6 +40,8 @@ repos:
         entry: pylint
         language: system
         types: [python]
+        env:
+          - PYTHONPATH=.
         exclude: ^venv/ ^.git/ ^.vscode/ ^.DS_Store
   # - repo: local
   #   hooks:

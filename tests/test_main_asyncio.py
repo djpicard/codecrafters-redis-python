@@ -8,14 +8,19 @@ import pytest
 
 import app
 import app.main
-import app.parser
 
 logger = logging.getLogger(__name__)
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"
 logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
 
-messages_to_send = ["*1\r\n$4\r\nPING\r\n", "*2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n"]
-correct_returns = ["+PONG\r\n", "$3\r\nhey\r\n"]
+messages_to_send = [
+    "*1\r\n$4\r\nPING\r\n",
+    "*2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n",
+    "*2\r\n$3\r\nGET\r\n$3\r\nkey\r\n",
+    "*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$3\r\nval\r\n",
+    "*2\r\n$3\r\nGET\r\n$3\r\nkey\r\n",
+]
+correct_returns = ["+PONG\r\n", "$3\r\nhey\r\n", "$-1\r\n", "+OK\r\n", "$3\r\nval\r\n"]
 
 
 @pytest.mark.asyncio
@@ -35,13 +40,13 @@ async def test_server_commands(caplog):
         messages = messages_to_send
 
         for msg in messages:
-            logger.info(f"sending message {msg}")
+            logger.info("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
             logger.info("waiting on return message")
             data = await reader.read(1024)
-            logger.info(f"received {data.decode()}")
+            logger.info("received: %s", data.decode())
             responses.append(data.decode())
 
             logger.info("closing writer")

@@ -14,20 +14,60 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
 def parse(message: str) -> str:
     """parse full message received from client"""
     data = message.split("\r\n")
+    #
+    # data 0 - type of message and how many words + word length
+    # data 1::2 - the length of each word denoted as $<int>
+    # data 2::2 - actual data with data[2] being the command sent
+    #
     logger.info(data)
 
     sym, val = data[0]
-    if len(data[1:]) != (int(val) * 2 + 1):
-        return "+Error\n\r"
+    res, err = _check_data(
+        data=data[1:-1], lenth=val
+    )  # verify that the sent command is properly formated
+    if not res:
+        return err
 
     match sym:
         case "*":
-            logger.info("Recieved array")
-            return encoder.encode(parse_array(data[1:-1]))
+            return encoder.encode(
+                parse_cmd(data[2::2])
+            )  # we only need the command and arguments which are every odd number in the array
         case _:
             logger.info("Bad command")
+            return "-ERR Command Not Impemented"
 
-    return "Unknown command"
+    return "-ERR Unknown command"
+
+
+def parse_cmd(data: list[str]) -> str:
+    """parse the command arrays"""
+    logger.info("Command data: %s", data)
+    results = ""
+    match data[0]:  # checking the instruction sent by the client
+        case "PING":
+            results += cmd.ping()
+        case "ECHO":
+            results += cmd.echo(data[1])  # returning the same value sent by the client
+        case "GET":
+            results += cmd.get_data(data[1])
+        case "SET":
+            results += cmd.set_data(data[1:])
+        case _:
+            results += ""
+    return results
+
+
+def _check_data(data: list[str], lenth: str) -> tuple[bool, str]:
+    """verify that the incoming data is valid"""
+    if len(data) != (int(lenth) * 2):
+        return False, "-ERR command doesn't match given size"
+    if len(data) % 2 == 1:
+        return False, "-ERR bad format or missing data"
+    for size, val in zip(data[::2], data[1::2]):
+        if not _verify_size(size, val):
+            return False, "-ERR data does not match given size"
+    return True, ""
 
 
 def _verify_size(size: str, data) -> bool:
@@ -38,30 +78,3 @@ def _verify_size(size: str, data) -> bool:
     if int(val) != len(data):
         return False
     return True
-
-
-def _get_commands(data: list[str]) -> list[str]:
-    """splitting out each command and data pair"""
-    if len(data) % 2 == 1:
-        return []
-    output = []
-    for size, val in zip(data[::2], data[1::2]):
-        if _verify_size(size, val):
-            output.append(val)
-    logger.info(output)
-    return output
-
-
-def parse_array(data: list[str]) -> str:
-    """parse the command arrays"""
-    logger.info(data)
-    commands = _get_commands(data)
-    results = ""
-    match commands[0]:
-        case "PING":
-            results += cmd.ping()
-        case "ECHO":
-            results += cmd.echo(commands[1])
-        case _:
-            results += ""
-    return results

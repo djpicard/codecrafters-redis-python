@@ -21,15 +21,15 @@ async def start_server():
 async def main():
     """main function to start our redis journey"""
     # You can use print statements as follows for debugging, they'll be visible when running tests.
-    logger.info("Logs from your program will appear here!")
+    logger.debug("Logs from your program will appear here!")
     # create an asyncio server
     server = await asyncio.start_server(handler, "127.0.0.1", port=6379)
-    logger.info("Server is up: %s", server.is_serving())
+    logger.debug("Server is up: %s", server.is_serving())
     # return server
 
     async with server:
         await server.serve_forever()
-        logger.info("Shutting down server")
+        logger.debug("Shutting down server")
     # report the details of the server
 
 
@@ -37,23 +37,23 @@ async def handler(reader, writer):
     """connection handler"""
 
     addr = writer.get_extra_info("peername")
-    logger.info("Connected with: %s", addr)
+    logger.debug("Connected with: %s", addr)
 
     while True:
         data = await reader.read(1024)
         if not data:
-            logger.info("Disconnected from: %s", addr)
+            logger.debug("Disconnected from: %s", addr)
             break
 
         message = data.decode()
-        logger.info("Received message: %s", message)
+        logger.debug("Received message: %s", message)
 
         resp = parser.parse(message)
-        logger.info("Sending responce: %s", resp)
+        logger.debug("Sending responce: %s", resp)
         writer.write(resp.encode())
         await writer.drain()
 
-    logger.info("Closing writer connection")
+    logger.debug("Closing writer connection")
     writer.close()
     await writer.wait_closed()
 

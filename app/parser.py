@@ -19,7 +19,7 @@ def parse(message: str) -> str:
     # data 1::2 - the length of each word denoted as $<int>
     # data 2::2 - actual data with data[2] being the command sent
     #
-    logger.info(data)
+    logger.debug(data)
 
     sym, val = data[0]
     res, err = _check_data(
@@ -34,7 +34,7 @@ def parse(message: str) -> str:
                 parse_cmd(data[2::2])
             )  # we only need the command and arguments which are every odd number in the array
         case _:
-            logger.info("Bad command")
+            logger.debug("Bad command")
             return "-ERR Command Not Impemented"
 
     return "-ERR Unknown command"
@@ -42,7 +42,7 @@ def parse(message: str) -> str:
 
 def parse_cmd(data: list[str]) -> str:
     """parse the command arrays"""
-    logger.info("Command data: %s", data)
+    logger.debug("Command data: %s", data)
     results = ""
     match data[0]:  # checking the instruction sent by the client
         case "PING":

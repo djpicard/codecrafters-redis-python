@@ -28,28 +28,28 @@ async def test_server_commands(caplog):
     """testing server commands"""
     caplog.set_level(logging.INFO)
     # Start server
-    logger.info("starting server")
+    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.info("connecting with server")
+        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
 
         messages = messages_to_send
 
         for msg in messages:
-            logger.info("sending message: %s", msg)
+            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.info("waiting on return message")
+            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.info("received: %s", data.decode())
+            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
 
-            logger.info("closing writer")
+            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -57,7 +57,7 @@ async def test_server_commands(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.info("sending data")
+        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
         assert len(responses) == len(correct_returns)
         assert responses == correct_returns

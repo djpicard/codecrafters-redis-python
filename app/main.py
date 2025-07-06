@@ -4,6 +4,7 @@ import asyncio
 import logging
 import sys
 
+from app import commands as cmd
 from app import parser
 
 # import socket  # noqa: F401
@@ -14,6 +15,7 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
 
 async def start_server():
     """entrypoint for testing"""
+    cmd.reset_datastore()
     server = await asyncio.start_server(handler, "127.0.0.1", port=6379)
     return server
 
@@ -22,6 +24,7 @@ async def main():
     """main function to start our redis journey"""
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     logger.debug("Logs from your program will appear here!")
+    cmd.reset_datastore()
     # create an asyncio server
     server = await asyncio.start_server(handler, "127.0.0.1", port=6379)
     logger.debug("Server is up: %s", server.is_serving())

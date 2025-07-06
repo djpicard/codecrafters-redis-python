@@ -23,7 +23,7 @@ def parse(message: str) -> str:
 
     sym, val = data[0]
     res, err = _check_data(
-        data=data[1:-1], lenth=val
+        data=data[1:-1], length=val
     )  # verify that the sent command is properly formated
     if not res:
         return err
@@ -58,9 +58,9 @@ def parse_cmd(data: list[str]) -> str:
     return results
 
 
-def _check_data(data: list[str], lenth: str) -> tuple[bool, str]:
+def _check_data(data: list[str], length: str) -> tuple[bool, str]:
     """verify that the incoming data is valid"""
-    if len(data) != (int(lenth) * 2):
+    if len(data) != (int(length) * 2):
         return False, "-ERR command doesn't match given size"
     if len(data) % 2 == 1:
         return False, "-ERR bad format or missing data"
@@ -72,6 +72,8 @@ def _check_data(data: list[str], lenth: str) -> tuple[bool, str]:
 
 def _verify_size(size: str, data) -> bool:
     """checking the size of the data sent with the expected size"""
+    if size == "":
+        return False
     sym, val = size
     if sym != "$":
         return False

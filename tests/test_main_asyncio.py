@@ -220,8 +220,16 @@ async def test_set_get_px(caplog):
         "*2\r\n$3\r\nGET\r\n$3\r\nkey\r\n",
         "*5\r\n$3\r\nSET\r\n$3\r\nkey\r\n$3\r\nval\r\n$2\r\npx\r\n$3\r\n100\r\n",
         "*2\r\n$3\r\nGET\r\n$3\r\nkey\r\n",
+        "*3\r\n$3\r\nSET\r\n$10\r\nstrawberry\r\n$4\r\npear\r\n",
+        "*2\r\n$3\r\nGET\r\n$10\r\nstrawberry\r\n",
     ]
-    correct_returns = ["$-1\r\n", "+OK\r\n", "$3\r\nval\r\n"]
+    correct_returns = [
+        "$-1\r\n",
+        "+OK\r\n",
+        "$3\r\nval\r\n",
+        "+OK\r\n",
+        "$4\r\npear\r\n",
+    ]
 
     caplog.set_level(logging.INFO)
     # Start server

@@ -72,6 +72,7 @@ def _check_data(data: list[str], length: str) -> tuple[bool, str]:
 
 def _verify_size(size: str, data) -> bool:
     """checking the size of the data sent with the expected size"""
+    logger.debug("size: %s, data: %s", size, data)
     if size == "":
         return False
     sym, val = size

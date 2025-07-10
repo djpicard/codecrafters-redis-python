@@ -5,7 +5,7 @@ import logging
 import sys
 
 from app import commands as cmd
-from app import parser
+from app import configurations, parser
 
 # import socket  # noqa: F401
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ async def main():
     """main function to start our redis journey"""
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     logger.debug("Logs from your program will appear here!")
+    configurations.set_config(sys.argv)
     cmd.reset_datastore()
     # create an asyncio server
     server = await asyncio.start_server(handler, "127.0.0.1", port=6379)

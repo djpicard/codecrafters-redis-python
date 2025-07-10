@@ -2,10 +2,13 @@
 
 from datetime import datetime, timedelta, timezone
 
+from app.configurations import get_config, set_config
+
 # dictionary to store any data sent
 datastore: dict[str, dict[str, str]] = {}
 
 
+# utils
 def reset_datastore() -> None:
     """reset the datastore on restart"""
     datastore.clear()
@@ -21,7 +24,8 @@ def echo(data: str) -> str:
     return data
 
 
-def set_data(data: list[str]) -> str:
+# data
+def set_data(data: list[str]) -> str | list[str]:
     """setting data with key value pair"""
     key = data[0]
     options = data[1:]
@@ -29,24 +33,26 @@ def set_data(data: list[str]) -> str:
     # set record and put it into the datastore
     record: dict[str, str] = _set_options(options=options)
     datastore[key] = record
+    if datastore[key] != record:
+        return "$-1"  # "-ERR unable to set record into the datastore"
     return "+OK"
 
 
 def get_data(key: str) -> str:
     """getting data with specific key"""
     if not key in datastore:
-        return ""
+        return "$-1"  # "-ERR Key not found in datastore"
     # data is stored in a dictionary
     # key is a str
     # data is stored as a dict[str, object])
     record = datastore[key]
-    result = ""
+    result = "-ERR No matching data found"
     for x, y in record.items():
         match x:
             case "px":
                 currtime = datetime.now().timestamp()
                 if currtime > float(y):
-                    return ""
+                    return "$-1"  # "-ERR record timed out"
             case "value":
                 result = y
     return result
@@ -66,3 +72,16 @@ def _set_options(options: list[str]) -> dict[str, str]:
             case _:
                 result["value"] = x
     return result
+
+
+# configs
+def configs(data: list[str]) -> list[str] | str:
+    """config subcommands"""
+    cmd = data[0]
+    match cmd:
+        case "GET":
+            return get_config(data[1])
+        case "SET":
+            return set_config(data[1:])
+        case _:
+            return "-ERR Unimplemented config command"

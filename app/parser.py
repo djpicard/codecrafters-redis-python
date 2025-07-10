@@ -30,9 +30,7 @@ def parse(message: str) -> str:
 
     match sym:
         case "*":
-            return encoder.encode(
-                parse_cmd(data[2::2])
-            )  # we only need the command and arguments which are every odd number in the array
+            return encoder.encode(parse_cmd(data[2::2]))
         case _:
             logger.debug("Bad command")
             return "-ERR Command Not Impemented"
@@ -40,22 +38,22 @@ def parse(message: str) -> str:
     return "-ERR Unknown command"
 
 
-def parse_cmd(data: list[str]) -> str:
+def parse_cmd(data: list[str]) -> str | list[str]:
     """parse the command arrays"""
     logger.debug("Command data: %s", data)
-    results = ""
     match data[0]:  # checking the instruction sent by the client
         case "PING":
-            results += cmd.ping()
+            return cmd.ping()
         case "ECHO":
-            results += cmd.echo(data[1])  # returning the same value sent by the client
+            return cmd.echo(data[1])  # returning the same value sent by the client
         case "GET":
-            results += cmd.get_data(data[1])
+            return cmd.get_data(data[1])
         case "SET":
-            results += cmd.set_data(data[1:])
+            return cmd.set_data(data[1:])
+        case "CONFIG":
+            return cmd.configs(data[1:])
         case _:
-            results += ""
-    return results
+            return ["-ERR Unimplemened command"]
 
 
 def _check_data(data: list[str], length: str) -> tuple[bool, str]:
@@ -70,14 +68,15 @@ def _check_data(data: list[str], length: str) -> tuple[bool, str]:
     return True, ""
 
 
-def _verify_size(size: str, data) -> bool:
+def _verify_size(size: str, data: str) -> bool:
     """checking the size of the data sent with the expected size"""
     logger.debug("size: %s, data: %s", size, data)
-    if size == "":
+    print(f"verify size: {size}")
+    if len(size) < 2:
         return False
-    sym, val = size
+    sym, *val = size
     if sym != "$":
         return False
-    if int(val) != len(data):
+    if int("".join(val)) != len(data):
         return False
     return True

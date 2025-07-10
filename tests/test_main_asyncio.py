@@ -57,6 +57,7 @@ async def test_ping(caplog):
         # Run client and get echoed messages
         logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        logger.info("response: %s, correct: %s", responses[0], correct_returns[0])
         assert responses[0] == correct_returns[0]
     finally:
         server.close()

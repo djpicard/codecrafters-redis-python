@@ -75,5 +75,6 @@ if __name__ == "__main__":
     arguments.add_argument("--dir")
     arguments.add_argument("--dbfilename")
     arguments.add_argument("--port", default=6379)
+    arguments.add_argument("--replicaof")
     init_args = arguments.parse_args()
     asyncio.run(main(args=init_args))

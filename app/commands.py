@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 
-from app.configurations import get_config, set_config
+from app.configurations import get_config, reset_configs, set_config
 
 # dictionary to store any data sent
 datastore: dict[str, dict[str, str]] = {}
@@ -83,5 +83,7 @@ def configs(data: list[str]) -> list[str] | str:
             return get_config(data[1])
         case "SET":
             return set_config(data[1:])
+        case "RESET":
+            return reset_configs()
         case _:
             return "-ERR Unimplemented config command"

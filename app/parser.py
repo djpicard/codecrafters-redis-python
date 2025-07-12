@@ -8,7 +8,7 @@ from app import encoder
 
 logger = logging.getLogger(__name__)
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"
-logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=FORMAT)
 
 
 def parse(message: str) -> str:
@@ -59,19 +59,18 @@ def parse_cmd(data: list[str]) -> str | list[str]:
 def _check_data(data: list[str], length: str) -> tuple[bool, str]:
     """verify that the incoming data is valid"""
     if len(data) != (int(length) * 2):
-        return False, "-ERR command doesn't match given size"
+        return False, f"-ERR command doesn't match given size {data} {length}"
     if len(data) % 2 == 1:
         return False, "-ERR bad format or missing data"
     for size, val in zip(data[::2], data[1::2]):
         if not _verify_size(size, val):
-            return False, "-ERR data does not match given size"
+            return False, f"-ERR data does not match given size s{size} v{val}"
     return True, ""
 
 
 def _verify_size(size: str, data: str) -> bool:
     """checking the size of the data sent with the expected size"""
     logger.debug("size: %s, data: %s", size, data)
-    print(f"verify size: {size}")
     if len(size) < 2:
         return False
     sym, *val = size

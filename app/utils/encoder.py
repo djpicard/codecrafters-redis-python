@@ -8,16 +8,18 @@ FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"
 logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
 
 
-def encode(val: str | list[str]) -> str:
+def encode(val: str | list[str]) -> bytes:
     """encode for redis protocol"""
     print(f"val to encode {val}")
     match (val):
         case str():
-            return _simple_resp(val)
+            return _simple_resp(val).encode()
         case list():
-            return _bulk_resp(val)
+            return _bulk_resp(val).encode()
         case _:
-            return _simple_resp("-ERR Not all data types have been implemented")
+            return _simple_resp(
+                "-ERR Not all data types have been implemented"
+            ).encode()
 
 
 def _simple_resp(val: str) -> str:

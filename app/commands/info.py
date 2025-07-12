@@ -7,7 +7,7 @@ repl: list[str] = [
 
 def init_repl(keystore: dict) -> None:
     """initialize replication store"""
-    keystore["role"] = "master" if keystore["replicaof"] is not None else "slave"
+    keystore["role"] = "master" if keystore["replicaof"] is None else "slave"
     keystore["connected_slaves"] = "0"
     keystore["master_replid"] = "masterreplid"
     keystore["master_repl_offset"] = "0"

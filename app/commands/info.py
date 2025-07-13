@@ -1,33 +1,36 @@
 """info commands"""
 
-repl: list[str] = [
-    "role"
-]  # , "connected_slaves", "master_replid", "master_repl_offset"]
+from app.classes.records import Record
 
 
-def init_repl(keystore: dict) -> None:
+def _init_repl(keystore: dict[str, Record]) -> None:
     """initialize replication store"""
-    keystore["role"] = "master" if keystore["replicaof"] is None else "slave"
-    keystore["connected_slaves"] = "0"
-    keystore["master_replid"] = "masterreplid"
-    keystore["master_repl_offset"] = "0"
+    if keystore["replicaof"].get() == "":
+        keystore["role"] = Record(value="master")
+    else:
+        keystore["role"] = Record(value="slave")
+    keystore["connected_slaves"] = Record(value="0")
+    keystore["master_replid"] = Record(value="8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb")
+    keystore["master_repl_offset"] = Record(value="0")
 
 
-def info(command: str, keystore: dict) -> str | list[str]:
+def info(command: str, keystore: dict[str, Record]) -> str | list[str]:
     """parse info commands"""
-    print(f"commands: {command}")
     match command.lower():
         case "replication":
             return replication(keystore=keystore)
     return "$-1"
 
 
-def replication(keystore: dict) -> str | list[str]:
+def replication(keystore: dict[str, Record]) -> str:
     """retrieve replication info"""
+    repl: list[str] = [
+        "role",
+        "master_replid",
+        "master_repl_offset",
+    ]
     output: list[str] = []
-    print(f"keystore: {keystore}, repl: {repl}")
     for x in repl:
         if x in keystore:
-            return f"{x}:{keystore[x]}"
-    print(f"output: {output}")
-    return output
+            output.append(f"{x}:{keystore[x].get()}")
+    return "\r\n".join(output)

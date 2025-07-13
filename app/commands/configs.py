@@ -1,8 +1,10 @@
 """functions to handle configurations"""
 
+from app.classes.records import Record
+
 
 # configs
-def configs(data: list[str], keystore: dict) -> list[str] | str:
+def configs(data: list[str], keystore: dict[str, Record]) -> list[str] | str:
     """config subcommands"""
     cmd = data[0]
     print(data)
@@ -15,18 +17,18 @@ def configs(data: list[str], keystore: dict) -> list[str] | str:
             return "-ERR Unimplemented config command"
 
 
-def set_config(data: list[str], keystore: dict) -> list[str] | str:
+def set_config(data: list[str], keystore: dict[str, Record]) -> list[str] | str:
     """get config values"""
     key = data[0]
     val = data[1]
-    keystore[key] = val
+    keystore[key] = Record(value=val)
     if key in keystore:
         return "+OK"
     return "$-1"
 
 
-def get_config(key: str, keystore: dict) -> list[str] | str:
+def get_config(key: str, keystore: dict[str, Record]) -> list[str] | str:
     """get config values"""
     if key in keystore:
-        return [key, keystore[key]]
+        return [key, keystore[key].get()]
     return "$-1"  # "-ERR no matching key in configurations"]

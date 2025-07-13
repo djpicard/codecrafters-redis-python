@@ -1,13 +1,12 @@
 """functions for commands"""
 
-from datetime import datetime, timedelta, timezone
-
+from app.classes.records import Record
 from app.commands import rdb
 from app.commands.configs import configs  # get_config, set_config
-from app.commands.info import info, init_repl
+from app.commands.info import _init_repl, info
 
 
-def cmds(commands: list[str], keystore: dict) -> str | list[str]:
+def cmds(commands: list[str], keystore: dict[str, Record]) -> str | list[str]:
     """handle commands"""
     match commands[0].upper():  # checking the instruction sent by the client
         case "PING":
@@ -38,59 +37,42 @@ def echo(key: str) -> str:
 
 
 # data
-def set_data(data: list[str], keystore: dict) -> str | list[str]:
+def set_data(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
     """setting data with key value pair"""
     key = data[0]
-    options = data[1:]
+    val = data[1]
+    px = -1
+    if len(data) > 2:
+        print(data)
+        px = int(data[3])
 
     # set record and put it into the datastore
-    record: dict[str, str] = _set_options(options=options)
+    record: Record = Record(value=val, px=int(px))
     keystore[key] = record
     if keystore[key] != record:
         return "$-1"  # "-ERR unable to set record into the datastore"
     return "+OK"
 
 
-def get_data(key: str, keystore: dict[str, dict[str, str]]) -> str:
+def get_data(key: str, keystore: dict[str, Record]) -> str:
     """getting data with specific key"""
     if not key in keystore:
-        return "$-1"  # "-ERR Key not found in datastore"
-    # data is stored in a dictionary
-    # key is a str
-    # data is stored as a dict[str, object])
-    record: dict[str, str] = keystore[key]
-    result = "-ERR No matching data found"
-
-    for x in record:
-        match x:
-            case "px":
-                currtime = datetime.now().timestamp()
-                if currtime > float(record[x]):
-                    return "$-1"  # "-ERR record timed out"
-            case "value":
-                result = record[x]
-    return result
+        return "$-1"
+    record: Record = keystore[key]
+    return record.get()
 
 
-def _set_options(options: list[str]) -> dict[str, str]:
-    """parse options given to the datastore"""
-    it = iter(options)
-    result: dict[str, str] = {}  # adding value for record
-    for x in it:  # adding options for record
-        match x.lower():
-            case "px":
-                px = datetime.now(timezone.utc).now() + timedelta(
-                    milliseconds=int(next(it))
-                )
-                result["px"] = f"{px.timestamp()}"
-            case _:
-                result["value"] = x
-    return result
-
-
-def init(keystore: dict, args: dict) -> None:
+def init(keystore: dict[str, Record], args: dict[str, str]) -> None:
     """initialize redis"""
     keystore.clear()
-    keystore.update(args)
-    init_repl(keystore)
+    _init_args(keystore=keystore, args=args)
+    _init_repl(keystore)
     rdb.rdb_file_exists(keystore=keystore)
+
+
+def _init_args(keystore: dict[str, Record], args: dict[str, str]) -> None:
+    """add args to keystore"""
+    if not args:
+        return
+    for x, y in args.items():
+        keystore[x] = Record(value=y)

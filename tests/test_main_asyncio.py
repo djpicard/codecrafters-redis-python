@@ -23,34 +23,27 @@ async def test_info(caplog):
         "*2\r\n$4\r\nINFO\r\n$11\r\nreplication\r\n",
     ]
     correct_returns = [
-        "*4\r\n$11\r\nrole:master\r\n$18\r\nconnected_slaves:0\r\n$26\r\n"
-        + "master_replid:masterreplid\r\n$20\r\nmaster_repl_offset:0\r\n"
+        "$89\r\nrole:master\r\nmaster_replid:8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+        + "\r\nmaster_repl_offset:0\r\n"
     ]
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
 
         messages = messages_to_send
 
         for msg in messages:
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -58,10 +51,7 @@ async def test_info(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
-        logger.info("response: %s, correct: %s", responses[0], correct_returns[0])
-        print(f"assert: {responses[0]} - {correct_returns[0]}")
         assert responses[0] == correct_returns[0]
     finally:
         server.close()
@@ -79,28 +69,21 @@ async def test_ping(caplog):
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
 
         messages = messages_to_send
 
         for msg in messages:
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -108,9 +91,7 @@ async def test_ping(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
-        logger.info("response: %s, correct: %s", responses[0], correct_returns[0])
         assert responses[0] == correct_returns[0]
     finally:
         server.close()
@@ -128,28 +109,20 @@ async def test_echo(caplog):
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
-
         messages = messages_to_send
 
         for msg in messages:
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -157,7 +130,6 @@ async def test_echo(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
         assert responses[0] == correct_returns[0]
     finally:
@@ -176,28 +148,21 @@ async def test_bad_get_commands(caplog):
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
 
         messages = messages_to_send
 
         for msg in messages:
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -205,7 +170,6 @@ async def test_bad_get_commands(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
         assert responses[0] == correct_returns[0]
     finally:
@@ -226,28 +190,20 @@ async def test_set_get(caplog):
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
-
         messages = messages_to_send
 
         for msg in messages:
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -255,9 +211,7 @@ async def test_set_get(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
-        logger.info("responces %s", responses)
         assert responses[0] == correct_returns[0]
         assert responses[1] == correct_returns[1]
         assert responses[2] == correct_returns[2]
@@ -287,28 +241,20 @@ async def test_set_get_px(caplog):
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
-
         messages = messages_to_send
 
         for msg in messages:
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -316,7 +262,6 @@ async def test_set_get_px(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
         assert responses[0] == correct_returns[0]
         assert responses[1] == correct_returns[1]
@@ -345,28 +290,20 @@ async def test_set_get_configs(caplog):
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
-
         messages = messages_to_send
 
         for msg in messages:
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -374,15 +311,10 @@ async def test_set_get_configs(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
-        print(f"assert: {responses[0]} - {correct_returns[0]}")
         assert responses[0] == correct_returns[0]
-        print(f"assert: {responses[1]} - {correct_returns[1]}")
         assert responses[1] == correct_returns[1]
-        print(f"assert: {responses[2]} - {correct_returns[2]}")
         assert responses[2] == correct_returns[2]
-        print(f"assert: {responses[3]} - {correct_returns[3]}")
         assert responses[3] == correct_returns[3]
     finally:
         server.close()
@@ -402,29 +334,22 @@ async def test_set_get_px_delay(caplog):
 
     caplog.set_level(logging.INFO)
     # Start server
-    logger.debug("starting server")
     server = await app.main.start_server()
     host, port = server.sockets[0].getsockname()
     responses: list[str] = []
 
     async def client() -> list[str]:
-        logger.debug("connecting with server")
         reader, writer = await asyncio.open_connection(host, port)
 
         messages = messages_to_send
 
         for msg in messages:
             time.sleep(1)
-            logger.debug("sending message: %s", msg)
             writer.write(msg.encode())
             await writer.drain()
 
-            logger.debug("waiting on return message")
             data = await reader.read(1024)
-            logger.debug("received: %s", data.decode())
             responses.append(data.decode())
-
-            logger.debug("closing writer")
 
         writer.close()
         await writer.wait_closed()
@@ -432,7 +357,6 @@ async def test_set_get_px_delay(caplog):
 
     try:
         # Run client and get echoed messages
-        logger.debug("sending data")
         responses = await asyncio.wait_for(client(), timeout=5.0)
         assert responses[0] == correct_returns[0]
         assert responses[1] == correct_returns[1]

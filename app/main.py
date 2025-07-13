@@ -6,6 +6,7 @@ import logging
 import sys
 from asyncio import StreamReader, StreamWriter
 
+from app.classes.records import Record
 from app.commands.executor import init
 from app.utils import parser
 
@@ -15,7 +16,7 @@ FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=FORMAT)
 arguments = argparse.ArgumentParser()
 # dictionary to store any data sent
-datastore: dict[str, str | dict[str, str]] = {}
+datastore: dict[str, Record] = {}
 
 
 async def start_server():
@@ -75,6 +76,6 @@ if __name__ == "__main__":
     arguments.add_argument("--dir")
     arguments.add_argument("--dbfilename")
     arguments.add_argument("--port", default=6379)
-    arguments.add_argument("--replicaof")
+    arguments.add_argument("--replicaof", default="")
     init_args = arguments.parse_args()
     asyncio.run(main(args=init_args))

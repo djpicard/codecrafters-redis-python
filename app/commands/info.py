@@ -2,19 +2,19 @@
 
 import asyncio
 
-from app.classes.records import Record
+from app.classes.records import Record  # pylint: disable=import-error
 
 
 def init_repl(keystore: dict[str, Record]) -> None:
     """initialize replication store"""
-    if "replicaof" in keystore:
-        if keystore["replicaof"].get() != "":
-            keystore["role"] = Record(value="slave")
-    else:
-        keystore["role"] = Record(value="master")
+    keystore["role"] = Record(value="master")
     keystore["connected_slaves"] = Record(value="0")
     keystore["master_replid"] = Record(value="8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb")
     keystore["master_repl_offset"] = Record(value="0")
+
+    if "replicaof" in keystore:
+        if keystore["replicaof"].get() != "":
+            keystore["role"] = Record(value="slave")
 
 
 def info(command: str, keystore: dict[str, Record]) -> str | list[str]:

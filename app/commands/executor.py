@@ -3,7 +3,7 @@
 from app.classes.records import Record
 from app.commands import rdb
 from app.commands.configs import configs  # get_config, set_config
-from app.commands.info import _init_repl, info
+from app.commands.info import info, init_repl
 
 
 def cmds(commands: list[str], keystore: dict[str, Record]) -> str | list[str]:
@@ -41,10 +41,10 @@ def set_data(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
     """setting data with key value pair"""
     key = data[0]
     val = data[1]
-    px = -1
+    px = -1  # pylint: disable=invalid-name
     if len(data) > 2:
         print(data)
-        px = int(data[3])
+        px = int(data[3])  # pylint: disable=invalid-name
 
     # set record and put it into the datastore
     record: Record = Record(value=val, px=int(px))
@@ -65,14 +65,14 @@ def get_data(key: str, keystore: dict[str, Record]) -> str:
 def init(keystore: dict[str, Record], args: dict[str, str]) -> None:
     """initialize redis"""
     keystore.clear()
-    _init_args(keystore=keystore, args=args)
-    _init_repl(keystore)
+    init_args(keystore=keystore, args=args)
+    init_repl(keystore)
     rdb.rdb_file_exists(keystore=keystore)
 
 
-def _init_args(keystore: dict[str, Record], args: dict[str, str]) -> None:
+def init_args(keystore: dict[str, Record], args: dict[str, str]) -> None:
     """add args to keystore"""
     if not args:
         return
-    for x, y in args.items():
+    for x, y in args.items():  # pylint: disable=invalid-name
         keystore[x] = Record(value=y)

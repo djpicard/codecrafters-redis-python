@@ -8,6 +8,7 @@ from asyncio import StreamReader, StreamWriter
 
 from app.classes.records import Record
 from app.commands.executor import init
+from app.commands.info import replication
 from app.utils import parser
 
 # import socket  # noqa: F401
@@ -41,9 +42,18 @@ async def main(args):
     logger.debug("Server is up: %s", server.is_serving())
     # return server
 
-    async with server:
-        await server.serve_forever()
-        logger.debug("Shutting down server")
+    replication_task = asyncio.create_task(replication(datastore))
+
+    try:
+        async with server:
+            await server.serve_forever()
+            logger.debug("Shutting down server")
+    finally:
+        replication_task.cancel()
+        try:
+            await replication_task
+        except asyncio.CancelledError:
+            print("Replication task failed to cancel")
     # report the details of the server
 
 

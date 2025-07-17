@@ -1,13 +1,12 @@
 """functions to handle configurations"""
 
-from app.classes.records import Record
+from app.classes.records import Record  # pylint: disable=import-error
 
 
 # configs
 def configs(data: list[str], keystore: dict[str, Record]) -> list[str] | str:
     """config subcommands"""
     cmd = data[0]
-    print(data)
     match cmd:
         case "GET":
             return get_config(data[1], keystore)

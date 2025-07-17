@@ -1,9 +1,9 @@
 """functions for commands"""
 
-from app.classes.records import Record
-from app.commands import rdb
-from app.commands.configs import configs  # get_config, set_config
-from app.commands.info import info, init_repl
+from app.classes.records import Record  # pylint: disable=import-error
+from app.commands import rdb  # pylint: disable=import-error
+from app.commands.configs import configs  # pylint: disable=import-error
+from app.commands.info import info, init_repl  # pylint: disable=import-error
 
 
 def cmds(commands: list[str], keystore: dict[str, Record]) -> str | list[str]:
@@ -43,7 +43,6 @@ def set_data(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
     val = data[1]
     px = -1  # pylint: disable=invalid-name
     if len(data) > 2:
-        print(data)
         px = int(data[3])  # pylint: disable=invalid-name
 
     # set record and put it into the datastore

@@ -17,7 +17,6 @@ def rdb_file_exists(keystore: dict) -> None:
 
 def exists(folder: str, file: str) -> None:
     """check to see if the rdb file exists and is readable/writable"""
-    print("file exists")
     if not os.path.exists(f"{folder}/{file}"):
         save()
 

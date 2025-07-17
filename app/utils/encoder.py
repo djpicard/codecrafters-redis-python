@@ -10,7 +10,6 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
 
 def encode(val: str | list[str]) -> bytes:
     """encode for redis protocol"""
-    print(f"val to encode {val}")
     match (val):
         case str():
             return _simple_resp(val).encode()
@@ -36,5 +35,4 @@ def _bulk_resp(val: list[str]) -> str:
     """simple resp"""
     array_size = len(val)
     output = "".join([f"${len(x)}\r\n{x}\r\n" for x in val])
-    print(f"output: {output}")
     return f"*{array_size}\r\n{output}"

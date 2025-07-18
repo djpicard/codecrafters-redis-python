@@ -3,7 +3,11 @@
 from app.classes.records import Record  # pylint: disable=import-error
 from app.commands import rdb  # pylint: disable=import-error
 from app.commands.configs import configs  # pylint: disable=import-error
-from app.commands.info import info, init_repl  # pylint: disable=import-error
+from app.commands.info import (  # pylint: disable=import-error
+    fullresync,
+    info,
+    init_repl,
+)
 
 
 def cmds(commands: list[str], keystore: dict[str, Record]) -> str | list[str]:
@@ -21,6 +25,8 @@ def cmds(commands: list[str], keystore: dict[str, Record]) -> str | list[str]:
             ret = configs(data=commands[1:], keystore=keystore)
         case "INFO":
             ret = info(command=commands[1], keystore=keystore)
+        case "FULLRESYNC":
+            ret = fullresync(data=commands[1:], keystore=keystore)
         case _:
             ret = ["-ERR Unimplemened command"]
     return ret

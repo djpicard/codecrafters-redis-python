@@ -10,8 +10,8 @@ def init_repl(keystore: dict[str, Record]) -> None:
     """initialize replication store"""
     keystore["role"] = Record(value="master")
     keystore["connected_slaves"] = Record(value="0")
-    keystore["master_replid"] = Record(value="8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb")
-    keystore["master_repl_offset"] = Record(value="0")
+    keystore["master_replid"] = Record(value="?")
+    keystore["master_repl_offset"] = Record(value="-1")
 
     if "replicaof" in keystore:
         if keystore["replicaof"].get() != "":
@@ -24,6 +24,14 @@ def info(command: str, keystore: dict[str, Record]) -> str | list[str]:
         case "replication":
             return info_repl(keystore=keystore)
     return "$-1"
+
+def fullresync(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
+    """parse fullresync response"""
+    # data[0] replid
+    # data[1] offset
+    keystore["master_replid"] = Record(value=data[0])
+    keystore["master_repl_offset"] = Record(value=data[1])
+    return "OK"
 
 
 def info_repl(keystore: dict[str, Record]) -> str:
@@ -47,8 +55,17 @@ async def replication(keystore: dict[str, Record]):
     host, port = keystore["replicaof"].get().split()
     message = [
         ["PING"],
-        ["REPLCONF", "listening-port", f"{keystore["port"].get()}"],
+        [
+            "REPLCONF",
+            "listening-port",
+            f"{keystore["port"].get()}",
+        ],
         ["REPLCONF", "capa", "psync2"],
+        [
+            "PSYNC",
+            f"{keystore["master_replid"].get()}",
+            f"{keystore["master_repl_offset"].get()}",
+        ],
     ]
     try:
         while True:

@@ -16,6 +16,4 @@ def parse(message: str, keystore: dict[str, Record]) -> bytes:
     """parse full message received from client"""
     # getting tokens
     commands = [x for x in message.split("\r\n")[1:-1] if not x.startswith("$")]
-
-    logger.debug(commands)
     return encoder.encode(cmds(commands=commands, keystore=keystore))

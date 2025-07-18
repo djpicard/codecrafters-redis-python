@@ -2,7 +2,7 @@
 
 import asyncio
 
-from app.classes.records import Record
+from app.classes.records import Record  # pylint: disable=import-error
 from app.utils.encoder import encode  # pylint: disable=import-error
 
 
@@ -51,17 +51,20 @@ async def replication(keystore: dict[str, Record]):
         ["REPLCONF", "capa", "psync2"],
     ]
     try:
-        for x in message:
+        while True:
             reader, writer = await asyncio.open_connection(host, port)
-            writer.write(encode(x))
-            await writer.drain()
+            for x in message:
+                writer.write(encode(x))
+                await writer.drain()
 
-            data = await reader.read(1024)
-            if not data:
-                break
+                data = await reader.read(1024)
+                if not data:
+                    break
 
-            resp = data.decode()
-            print(resp)
+                resp = data.decode()
+                print(resp)
+            writer.close()
+            await writer.wait_closed()
 
             # resp = parser.parse(message, keystore)
     except (  # pylint: disable=invalid-name,unused-variable

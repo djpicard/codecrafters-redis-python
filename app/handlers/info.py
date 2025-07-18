@@ -51,9 +51,10 @@ def fullresync(data: list[str]) -> str | list[str]:
     return "OK"
 
 @registry.register("REPLCONF")
-def replconf(data: list[str]) -> str | list[str]:
+def replconf(data: str, data2: str) -> str | list[str]:
     """handle replconf"""
     print(data)
+    print(data2)
     print(keystore)
     return "OK" # just sending ok for now
 

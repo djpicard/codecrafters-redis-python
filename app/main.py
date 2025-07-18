@@ -32,14 +32,12 @@ async def start_server():
 async def main(args):
     """main function to start our redis journey"""
     # You can use print statements as follows for debugging, they'll be visible when running tests.
-    logger.debug("Logs from your program will appear here!")
     init(keystore=datastore, args=vars(args))
 
     # create an asyncio server
     server = await asyncio.start_server(
         lambda r, w: handler(r, w, datastore), "127.0.0.1", port=args.port
     )
-    logger.debug("Server is up: %s", server.is_serving())
     # return server
 
     replication_task = asyncio.create_task(replication(datastore))
@@ -70,10 +68,8 @@ async def handler(reader: StreamReader, writer: StreamWriter, keystore: dict):
             break
 
         message = data.decode()
-        logger.debug("Received message: %s", message)
-
         resp = parser.parse(message, keystore)
-        logger.debug("Sending responce: %s", resp)
+
         writer.write(resp)
         await writer.drain()
 

@@ -2,7 +2,8 @@
 
 import asyncio
 
-from app.classes.records import Record  # pylint: disable=import-error
+from app.classes.records import Record
+from app.utils.encoder import encode  # pylint: disable=import-error
 
 
 def init_repl(keystore: dict[str, Record]) -> None:
@@ -44,18 +45,23 @@ async def replication(keystore: dict[str, Record]):
     if not keystore["replicaof"]:
         return
     host, port = keystore["replicaof"].get().split()
-    message = "*1\r\n$4\r\nPING\r\n"
+    message = [
+        ["PING"],
+        ["REPLCONF", "listening-port", f"{keystore["port"].get()}"],
+        ["REPLCONF", "capa", "psync2"],
+    ]
     try:
-        while True:
+        for x in message:
             reader, writer = await asyncio.open_connection(host, port)
-            writer.write(message.encode())
+            writer.write(encode(x))
             await writer.drain()
 
             data = await reader.read(1024)
             if not data:
                 break
 
-            message = data.decode()
+            resp = data.decode()
+            print(resp)
 
             # resp = parser.parse(message, keystore)
     except (  # pylint: disable=invalid-name,unused-variable

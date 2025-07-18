@@ -7,6 +7,7 @@ from app.commands.info import (  # pylint: disable=import-error
     fullresync,
     info,
     init_repl,
+    replconf,
 )
 
 
@@ -27,6 +28,8 @@ def cmds(commands: list[str], keystore: dict[str, Record]) -> str | list[str]:
             ret = info(command=commands[1], keystore=keystore)
         case "FULLRESYNC":
             ret = fullresync(data=commands[1:], keystore=keystore)
+        case "REPLCONF":
+            ret = replconf(data=commands[1:], keystore=keystore)
         case _:
             ret = ["-ERR Unimplemened command"]
     return ret

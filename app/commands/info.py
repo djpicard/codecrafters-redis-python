@@ -27,15 +27,6 @@ def info(command: str, keystore: dict[str, Record]) -> str | list[str]:
             return info_repl(keystore=keystore)
     return "$-1"
 
-def fullresync(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
-    """parse fullresync response"""
-    # data[0] replid
-    # data[1] offset
-    keystore["master_replid"] = Record(value=data[0])
-    keystore["master_repl_offset"] = Record(value=data[1])
-    return "OK"
-
-
 def info_repl(keystore: dict[str, Record]) -> str:
     """retrieve replication info"""
     repl: list[str] = [
@@ -49,6 +40,19 @@ def info_repl(keystore: dict[str, Record]) -> str:
             output.append(f"{x}:{keystore[x].get()}")
     return "\r\n".join(output)
 
+def fullresync(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
+    """parse fullresync response"""
+    # data[0] replid
+    # data[1] offset
+    keystore["master_replid"] = Record(value=data[0])
+    keystore["master_repl_offset"] = Record(value=data[1])
+    return "OK"
+
+def replconf(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
+    """handle replconf"""
+    print(data)
+    print(keystore)
+    return "OK" # just sending ok for now
 
 async def replication(keystore: dict[str, Record]):
     """replication loop"""

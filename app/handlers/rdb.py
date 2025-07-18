@@ -2,17 +2,19 @@
 
 import os
 
+# from app.classes.keystore import keystore
+
 MAGIC = "REDIS"
 VERSION = "0011"
 
 
-def rdb_file_exists(keystore: dict) -> None:
-    """validating that rdb file exists and checking path"""
-    if not "dir" in keystore:
-        return
-    if not "" in keystore:
-        return
-    exists(folder=keystore["dir"], file=keystore["dbfilename"])
+# def rdb_file_exists() -> None:
+#     """validating that rdb file exists and checking path"""
+#     if not "dir" in keystore:
+#         return
+#     if not "" in keystore:
+#         return
+#     exists(folder=keystore["dir"], file=keystore["dbfilename"])
 
 
 def exists(folder: str, file: str) -> None:

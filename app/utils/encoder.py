@@ -1,24 +1,17 @@
 """encode data to adhere to redis return values"""
 
-import logging
-import sys
-
-logger = logging.getLogger(__name__)
-FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"
-logging.basicConfig(level=logging.INFO, stream=sys.stdout, format=FORMAT)
-
-
-def encode(val: str | list[str]) -> bytes:
+def encode(val: str | list[str]) -> str:
     """encode for redis protocol"""
+    print(f"Encoding return value: {val}")
     match (val):
         case str():
-            return _simple_resp(val).encode()
+            return _simple_resp(val)
         case list():
-            return _bulk_resp(val).encode()
+            return _bulk_resp(val)
         case _:
             return _simple_resp(
                 "-ERR Not all data types have been implemented"
-            ).encode()
+            )
 
 
 def _simple_resp(val: str) -> str:

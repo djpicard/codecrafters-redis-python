@@ -2,32 +2,33 @@
 
 import asyncio
 
-from app.classes.records import Record  # pylint: disable=import-error
+from app.classes.keystore import keystore
+from app.classes.registry import registry
 from app.utils.encoder import encode  # pylint: disable=import-error
 
 DEFAULT_MASTER_REPLID = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
 
 
-def init_repl(keystore: dict[str, Record]) -> None:
+def init_repl() -> None:
     """initialize replication store"""
-    keystore["role"] = Record(value="master")
-    keystore["connected_slaves"] = Record(value="0")
-    keystore["master_replid"] = Record(value=f"{DEFAULT_MASTER_REPLID}")
-    keystore["master_repl_offset"] = Record(value="0")
+    keystore.set(key="role", value="master")
+    keystore.set(key="connected_slaves", value="0")
+    keystore.set(key="master_replid", value=f"{DEFAULT_MASTER_REPLID}")
+    keystore.set(key="master_repl_offset", value="0")
 
-    if "replicaof" in keystore:
-        if keystore["replicaof"].get() != "":
-            keystore["role"] = Record(value="slave")
+    if keystore.key_exists(key="replicaof"):
+        if keystore.get(key="replicaof") != "":
+            keystore.set(key="role", value="slave")
 
-
-def info(command: str, keystore: dict[str, Record]) -> str | list[str]:
+@registry.register("INFO")
+def info(command: str) -> str | list[str]:
     """parse info commands"""
     match command.lower():
         case "replication":
-            return info_repl(keystore=keystore)
+            return info_repl()
     return "$-1"
 
-def info_repl(keystore: dict[str, Record]) -> str:
+def info_repl() -> str:
     """retrieve replication info"""
     repl: list[str] = [
         "role",
@@ -36,32 +37,34 @@ def info_repl(keystore: dict[str, Record]) -> str:
     ]
     output: list[str] = []
     for x in repl:  # pylint: disable=invalid-name
-        if x in keystore:
-            output.append(f"{x}:{keystore[x].get()}")
+        if keystore.key_exists(key=x):
+            output.append(f"{x}:{keystore.get(key=x)}")
     return "\r\n".join(output)
 
-def fullresync(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
+@registry.register("FULLRESYNC")
+def fullresync(data: list[str]) -> str | list[str]:
     """parse fullresync response"""
     # data[0] replid
     # data[1] offset
-    keystore["master_replid"] = Record(value=data[0])
-    keystore["master_repl_offset"] = Record(value=data[1])
+    keystore.set(key="master_replid", value=data[0])
+    keystore.set(key="master_repl_offset", value=data[1])
     return "OK"
 
-def replconf(data: list[str], keystore: dict[str, Record]) -> str | list[str]:
+@registry.register("REPLCONF")
+def replconf(data: list[str]) -> str | list[str]:
     """handle replconf"""
     print(data)
     print(keystore)
     return "OK" # just sending ok for now
 
-async def replication(keystore: dict[str, Record]):
+async def replication():
     """replication loop"""
-    if not keystore["replicaof"]:
+    if not keystore.key_exists("replicaof"):
         return
-    host, port = keystore["replicaof"].get().split()
+    host, port = keystore.get(key="replicaof").split()
     message = [
         ["PING"],
-        ["REPLCONF", "listening-port", f"{keystore["port"].get()}"],
+        ["REPLCONF", "listening-port", f"{keystore.get("port")}"],
         ["REPLCONF", "capa", "psync2"],
         ["PSYNC", "?", "-1"],
     ]
@@ -69,7 +72,7 @@ async def replication(keystore: dict[str, Record]):
         while True:
             reader, writer = await asyncio.open_connection(host, port)
             for x in message:
-                writer.write(encode(x))
+                writer.write(encode(x).encode())
                 await writer.drain()
 
                 data = await reader.read(1024)

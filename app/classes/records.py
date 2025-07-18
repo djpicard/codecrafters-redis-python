@@ -12,8 +12,12 @@ class Record:
 
     def get(self) -> str:
         """get the value if timeout has not expired"""
+        print("Getting Value from record: " +
+              f"{self.value}, {self.timeout}, " +
+              f"{datetime.now(timezone.utc).timestamp()}")
         if self.px != -1:
             if self.timeout < datetime.now(timezone.utc).timestamp():
+                print(f"Record timeout for {self.value}")
                 return "$-1"
         return self.value
 

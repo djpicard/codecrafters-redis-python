@@ -2,50 +2,38 @@
 
 import argparse
 import asyncio
-import logging
-import sys
 from asyncio import StreamReader, StreamWriter
 
-from app.classes.records import Record
-from app.commands.executor import init
-from app.commands.info import replication
-from app.utils import parser
+import app.handlers  # pylint: disable=unused-import
+from app.classes.registry import registry
+from app.handlers import configs, default, info  # pylint: disable=unused-import
+from app.utils.utils import init
 
-# import socket  # noqa: F401
-logger = logging.getLogger(__name__)
-FORMAT = "[%(filename)s:%(lineno)s - %(funcName)10s() ] %(message)s"
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=FORMAT)
 arguments = argparse.ArgumentParser()
 # dictionary to store any data sent
-datastore: dict[str, Record] = {}
-
 
 async def start_server():
     """entrypoint for testing"""
-    init(keystore=datastore, args={})
-    server = await asyncio.start_server(
-        lambda r, w: handler(r, w, datastore), "127.0.0.1", port=6379
-    )
+    init(args={})
+
+    server = await asyncio.start_server(handler, "127.0.0.1", port=6379)
     return server
 
 
 async def main(args):
     """main function to start our redis journey"""
     # You can use print statements as follows for debugging, they'll be visible when running tests.
-    init(keystore=datastore, args=vars(args))
+    init(args=vars(args))
 
     # create an asyncio server
-    server = await asyncio.start_server(
-        lambda r, w: handler(r, w, datastore), "127.0.0.1", port=args.port
-    )
+    server = await asyncio.start_server(handler, "127.0.0.1", port=args.port)
     # return server
 
-    replication_task = asyncio.create_task(replication(datastore))
+    replication_task = asyncio.create_task(info.replication())
 
     try:
         async with server:
             await server.serve_forever()
-            logger.debug("Shutting down server")
     finally:
         replication_task.cancel()
         try:
@@ -55,25 +43,23 @@ async def main(args):
     # report the details of the server
 
 
-async def handler(reader: StreamReader, writer: StreamWriter, keystore: dict):
+async def handler(reader: StreamReader, writer: StreamWriter):
     """connection handler"""
 
-    addr = writer.get_extra_info("peername")
-    logger.debug("Connected with: %s", addr)
+    # addr = writer.get_extra_info("peername")
 
     while True:
         data = await reader.read(1024)
         if not data:
-            logger.debug("Disconnected from: %s", addr)
             break
 
         message = data.decode()
-        resp = parser.parse(message, keystore)
+        resp = registry.handle(message).encode()
+        print(f"Resp: {resp}")
 
         writer.write(resp)
         await writer.drain()
 
-    logger.debug("Closing writer connection")
     writer.close()
     await writer.wait_closed()
 

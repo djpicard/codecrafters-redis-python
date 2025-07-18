@@ -5,13 +5,15 @@ import asyncio
 from app.classes.records import Record  # pylint: disable=import-error
 from app.utils.encoder import encode  # pylint: disable=import-error
 
+DEFAULT_MASTER_REPLID = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+
 
 def init_repl(keystore: dict[str, Record]) -> None:
     """initialize replication store"""
     keystore["role"] = Record(value="master")
     keystore["connected_slaves"] = Record(value="0")
-    keystore["master_replid"] = Record(value="?")
-    keystore["master_repl_offset"] = Record(value="-1")
+    keystore["master_replid"] = Record(value=f"{DEFAULT_MASTER_REPLID}")
+    keystore["master_repl_offset"] = Record(value="0")
 
     if "replicaof" in keystore:
         if keystore["replicaof"].get() != "":
@@ -55,17 +57,9 @@ async def replication(keystore: dict[str, Record]):
     host, port = keystore["replicaof"].get().split()
     message = [
         ["PING"],
-        [
-            "REPLCONF",
-            "listening-port",
-            f"{keystore["port"].get()}",
-        ],
+        ["REPLCONF", "listening-port", f"{keystore["port"].get()}"],
         ["REPLCONF", "capa", "psync2"],
-        [
-            "PSYNC",
-            f"{keystore["master_replid"].get()}",
-            f"{keystore["master_repl_offset"].get()}",
-        ],
+        ["PSYNC", "?", "-1"],
     ]
     try:
         while True:

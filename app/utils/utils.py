@@ -1,5 +1,5 @@
 """utility functions"""
-from app.classes.keystore import keystore
+from app.classes.Keystore import keystore
 from app.handlers.info import init_repl
 
 

@@ -4,9 +4,9 @@ import argparse
 import asyncio
 from asyncio import StreamReader, StreamWriter
 
-import app.handlers  # pylint: disable=unused-import
-from app.classes.registry import registry
-from app.handlers import configs, default, info  # pylint: disable=unused-import
+# import app.handlers as handlers # pylint: disable=unused-import
+from app.classes.Registry import registry
+from app.handlers import configs, default, info, rlist  # pylint: disable=unused-import
 from app.utils.utils import init
 
 arguments = argparse.ArgumentParser()

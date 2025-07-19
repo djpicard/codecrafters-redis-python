@@ -1,5 +1,6 @@
 """keystore to handle all redis data"""
-from app.classes.records import Record
+from app.classes.Record import Record
+from app.classes.RList import RList
 
 
 class KeyStore:
@@ -7,12 +8,14 @@ class KeyStore:
     def __init__(self):
         """initialize and empty dictionary"""
         self.keys: dict[str, Record] = {}
+        self.lists: dict[str, RList] = {}
         print(self.keys)
         self.keys.clear()
 
     def clear(self):
         """clear datastore, mostly used for testing"""
         self.keys.clear()
+        self.lists.clear()
 
     def set_array(self, data: list[str]) -> str:
         """setting data with key value pair"""
@@ -23,6 +26,11 @@ class KeyStore:
             px = int(data[3])  # pylint: disable=invalid-name
 
         return self.set(key=key, value=val, px=px)
+
+    def push_list(self, key:str, value:str) -> int:
+        """pushing data into a list, creating a new one is non exists"""
+        rlist: RList = self.lists[key] if key in self.lists else RList()
+        return rlist.push(value)
 
     def set(self, key:str, value: str, args: str = "", px:int = -1) -> str: # pylint: disable=unused-argument
         """setting data with key value pair"""

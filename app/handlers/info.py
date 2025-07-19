@@ -20,14 +20,6 @@ def init_repl() -> None:
         if keystore.get(key="replicaof") != "":
             keystore.set(key="role", value="slave")
 
-@registry.register("INFO")
-def info(command: str) -> str | list[str]:
-    """parse info commands"""
-    match command.lower():
-        case "replication":
-            return info_repl()
-    return "$-1"
-
 def info_repl() -> str:
     """retrieve replication info"""
     repl: list[str] = [
@@ -40,6 +32,22 @@ def info_repl() -> str:
         if keystore.key_exists(key=x):
             output.append(f"{x}:{keystore.get(key=x)}")
     return "\r\n".join(output)
+
+@registry.register("INFO")
+def info(command: str) -> str | list[str]:
+    """parse info commands"""
+    match command.lower():
+        case "replication":
+            return info_repl()
+    return "$-1"
+
+@registry.register("PSYNC")
+def psync(data:str, val:str) -> str:
+    """psync return"""
+    print(f"{data}")
+    print(f"{val}")
+    return f"FULLRESYNC {keystore.get("master_replid")} {keystore.get("master_repl_offset")}"
+
 
 @registry.register("FULLRESYNC")
 def fullresync(data: list[str]) -> str | list[str]:

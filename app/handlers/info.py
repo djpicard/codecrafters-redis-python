@@ -70,7 +70,12 @@ async def replication():
     """replication loop"""
     if not keystore.key_exists("replicaof"):
         return
+
     host, port = keystore.get(key="replicaof").split()
+    if not host or not port:
+        return
+
+    print("Starting Replication")
     message = [
         ["PING"],
         ["REPLCONF", "listening-port", f"{keystore.get("port")}"],

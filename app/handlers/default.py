@@ -1,7 +1,7 @@
 """functions for commands"""
 
 from ..classes.Keystore import keystore
-from ..classes.Registry import registry
+from ..Registry import registry
 
 
 @registry.register("PING")

@@ -50,9 +50,9 @@ async def handler(reader: StreamReader, writer: StreamWriter):
             break
 
         message = data.decode()
-        resp = registry.handle(message).encode()
+        resp = registry.handle(message)
 
-        writer.write(resp)
+        writer.write(resp.encode())
         await writer.drain()
 
     writer.close()

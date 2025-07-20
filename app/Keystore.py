@@ -84,5 +84,11 @@ class KeyStore:
             return self.keys[key].length()
         return 0
 
+    def lpop(self, key:str) -> str:
+        """left pop of rlist"""
+        if key in self.keys:
+            return self.keys[key].pop()
+        return "$-1"
+
 # singleton instance
 keystore = KeyStore()

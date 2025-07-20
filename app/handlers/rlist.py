@@ -31,3 +31,8 @@ def lrange(key:str, start: str, end:str) -> list[str]:
 def length(key:str) -> int:
     """get length of list"""
     return keystore.length(key=key)
+
+@registry.register("LPOP")
+def lpop(key:str) -> str:
+    """popping first element from list"""
+    return keystore.lpop(key=key)

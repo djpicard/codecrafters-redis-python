@@ -88,3 +88,7 @@ class Record:
     def length(self) -> int:
         """get length of list"""
         return len(self.rlist)
+
+    def pop(self) -> str:
+        """popping first element from list"""
+        return self.rlist.pop(0)

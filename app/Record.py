@@ -61,10 +61,9 @@ class Record:
                 datetime.now(timezone.utc).now() + timedelta(milliseconds=int(self.px))
             ).timestamp()
 
-    def push(self, value: tuple[str, ...]) -> int:
+    def push(self, value: str) -> int:
         """push data into list"""
-        for x in value:
-            self.rlist.append(x)
+        self.rlist.append(value)
         return len(self.rlist)
 
     def __str__(self) -> str:

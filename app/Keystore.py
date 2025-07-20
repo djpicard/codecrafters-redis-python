@@ -23,7 +23,7 @@ class KeyStore:
 
         return self.set(key=key, value=val, px=px)
 
-    def push_list(self, key:str, value: tuple[str, ...]) -> int:
+    def push_list(self, key:str, value: str) -> int:
         """pushing data into a list, creating a new one is non exists"""
         if not key in self.keys:
             record: Record = Record(Mode.LIST)

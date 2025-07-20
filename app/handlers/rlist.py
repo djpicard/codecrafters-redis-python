@@ -26,3 +26,8 @@ def _push(rlist: str, right:bool, *val: str) -> int:
 def lrange(key:str, start: str, end:str) -> list[str]:
     """handle lrange and return list"""
     return keystore.lrange(key=key, start=start, end=end)
+
+@registry.register("LLEN")
+def length(key:str) -> int:
+    """get length of list"""
+    return keystore.length(key=key)

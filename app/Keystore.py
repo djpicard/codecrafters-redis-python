@@ -78,5 +78,11 @@ class KeyStore:
             return self.keys[key].get_records(start=start, end=end)
         return []
 
+    def length(self, key:str) -> int:
+        """get length of list"""
+        if key in self.keys:
+            return self.keys[key].length()
+        return 0
+
 # singleton instance
 keystore = KeyStore()

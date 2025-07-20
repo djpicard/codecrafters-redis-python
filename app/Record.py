@@ -84,3 +84,7 @@ class Record:
         if end == "-1":
             return self.rlist[int(start):]
         return self.rlist[int(start):int(end) + 1]
+
+    def length(self) -> int:
+        """get length of list"""
+        return len(self.rlist)

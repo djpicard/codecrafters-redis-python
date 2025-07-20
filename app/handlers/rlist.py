@@ -33,6 +33,6 @@ def length(key:str) -> int:
     return keystore.length(key=key)
 
 @registry.register("LPOP")
-def lpop(key:str) -> str:
+def lpop(key:str, val:str = "") -> str | list[str]:
     """popping first element from list"""
-    return keystore.lpop(key=key)
+    return keystore.lpop(key=key, val=val)

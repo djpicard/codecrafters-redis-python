@@ -50,11 +50,7 @@ class Record:
 
     def set(self, value:str, px: int = -1) -> None:
         """set command for all types that the record could contain"""
-        match self.mode:
-            case Mode.STRING:
-                self.set_key(value=value, px=px)
-            case Mode.LIST:
-                self.push(value=value)
+        self.set_key(value=value, px=px)
 
     def set_key(self, value: str, px: int = -1) -> None:
         """set value"""
@@ -65,9 +61,10 @@ class Record:
                 datetime.now(timezone.utc).now() + timedelta(milliseconds=int(self.px))
             ).timestamp()
 
-    def push(self, value:str) -> int:
+    def push(self, value: tuple[str, ...]) -> int:
         """push data into list"""
-        self.rlist.append(value)
+        for x in value:
+            self.rlist.append(x)
         return len(self.rlist)
 
     def __str__(self) -> str:

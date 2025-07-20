@@ -78,6 +78,7 @@ class Record:
 
     def get_records(self, start:str, end:str) -> list[str]:
         """get a set of records"""
-        if int(end) < 0:
-            return self.rlist[int(start):int(end)]
+        print(self.rlist)
+        print(start + " " + end)
+        print(self.rlist[int(start):int(end) + 1])
         return self.rlist[int(start):int(end) + 1]

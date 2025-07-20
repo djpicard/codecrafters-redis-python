@@ -1,12 +1,14 @@
 """Redis Record"""
 
+from asyncio import Future, get_event_loop
+from collections import deque
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 
 
 class Mode(Enum):
     """enum for mode types"""
-    STRING     = "string"
+    STRING  = "string"
     LIST    = "list"
 
 class Record:
@@ -22,7 +24,8 @@ class Record:
                 self.px: int = -1
                 self.timeout: float = 0
             case Mode.LIST:
-                self.rlist: list[str] = []
+                self.rlist: deque[str] = deque()
+                self._waiters: deque[Future[str]] = deque()
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -63,10 +66,13 @@ class Record:
 
     def push(self, value: str, right:bool) -> int:
         """push data into list"""
+        if self._waiters:
+            future = self._waiters.popleft()
+            future.set_result(value)
         if right:
             self.rlist.append(value)
         else:
-            self.rlist.insert(0, value)
+            self.rlist.appendleft(value)
         return len(self.rlist)
 
     def __str__(self) -> str:
@@ -82,13 +88,25 @@ class Record:
     def get_records(self, start:str, end:str) -> list[str]:
         """get a set of records"""
         if end == "-1":
-            return self.rlist[int(start):]
-        return self.rlist[int(start):int(end) + 1]
+            return list(self.rlist)[int(start):]
+        return list(self.rlist)[int(start):int(end) + 1]
 
     def length(self) -> int:
         """get length of list"""
         return len(self.rlist)
 
-    def pop(self) -> str:
+    def mpop(self, val:int) -> list[str]:
+        """pop multiple values"""
+        output: list[str] = []
+        for _ in range(val):
+            output.append(self.rlist.pop())
+        return output
+
+    async def pop(self, timeout:str = "") -> str:
         """popping first element from list"""
-        return self.rlist.pop(0)
+        if timeout or self._waiters:
+            loop = get_event_loop()
+            waiter: Future[str] = loop.create_future()
+            self._waiters.append(waiter)
+            return await waiter
+        return self.rlist.popleft()

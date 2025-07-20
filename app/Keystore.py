@@ -84,15 +84,19 @@ class KeyStore:
             return self.keys[key].length()
         return 0
 
-    def lpop(self, key:str, val: str) -> str | list[str]:
+    async def lpop(self, key:str, val: str) -> str | list[str]:
         """left pop of rlist"""
         if key in self.keys:
             if val:
-                output: list[str] = []
-                for _ in range(int(val)):
-                    output.append(self.keys[key].pop())
-                return output
-            return self.keys[key].pop()
+                return self.keys[key].mpop(val=int(val))
+            return await self.keys[key].pop()
+        return "$-1"
+
+    async def blpop(self, key:str, timeout:str) -> str:
+        """blocking left pop"""
+        print(timeout)
+        if key in self.keys:
+            return await self.keys[key].pop()
         return "$-1"
 
 # singleton instance

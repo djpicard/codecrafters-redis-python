@@ -81,4 +81,6 @@ class Record:
         print(self.rlist)
         print(start + " " + end)
         print(self.rlist[int(start):int(end) + 1])
+        if end == "-1":
+            return self.rlist[int(start):int(end)]
         return self.rlist[int(start):int(end) + 1]

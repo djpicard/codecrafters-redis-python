@@ -78,4 +78,4 @@ class Record:
 
     def get_records(self, start:str, end:str) -> list[str]:
         """get a set of records"""
-        return self.rlist[int(start):int(end)]
+        return self.rlist[int(start):int(end) + 1]

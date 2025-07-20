@@ -6,13 +6,13 @@ from enum import Enum
 
 class Mode(Enum):
     """enum for mode types"""
-    KEY     = "key"
+    STRING     = "string"
     LIST    = "list"
 
 class Record:
     """record to contain all data needed for a redis record"""
 
-    def __init__(self, mode: Mode = Mode.KEY):
+    def __init__(self, mode: Mode = Mode.STRING):
         """init record"""
         # sets mode for the key
         self.mode: Mode = mode
@@ -29,7 +29,7 @@ class Record:
     def get(self) -> str:
         """default get data"""
         match(self.mode):
-            case Mode.KEY:
+            case Mode.STRING:
                 return self._get_key()
             case Mode.LIST:
                 return self._get_list()
@@ -48,7 +48,7 @@ class Record:
     def set(self, value:str, px: int = -1) -> None:
         """set command for all types that the record could contain"""
         match self.mode:
-            case Mode.KEY:
+            case Mode.STRING:
                 self.set_key(value=value, px=px)
             case Mode.LIST:
                 self.push(value=value)

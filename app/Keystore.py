@@ -34,7 +34,7 @@ class KeyStore:
     def set(self, key:str, value: str, args: str = "", px:int = -1) -> str: # pylint: disable=unused-argument
         """setting data with key value pair"""
         if not key in self.keys:
-            record: Record = Record(Mode.KEY)
+            record: Record = Record(Mode.STRING)
             self.keys[key] = record
 
         self.keys[key].set(value=value, px=px)

@@ -16,10 +16,13 @@ class Record:
         """init record"""
         # sets mode for the key
         self.mode: Mode = mode
-        self.value: str
-        self.px: int
-        self.timeout: float
-        self.rlist: list[str]
+        match(self.mode):
+            case Mode.STRING:
+                self.value: str = ""
+                self.px: int = -1
+                self.timeout: float = 0
+            case Mode.LIST:
+                self.rlist: list[str] = []
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -64,8 +67,6 @@ class Record:
 
     def push(self, value:str) -> int:
         """push data into list"""
-        if not self.rlist:
-            self.rlist: list[str] = []
         self.rlist.append(value)
         return len(self.rlist)
 

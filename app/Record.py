@@ -1,6 +1,6 @@
 """Redis Record"""
 
-from asyncio import Future, get_event_loop
+import asyncio
 from collections import deque
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -25,7 +25,7 @@ class Record:
                 self.timeout: float = 0
             case Mode.LIST:
                 self.rlist: deque[str] = deque()
-                self._waiters: deque[Future[str]] = deque()
+                self._waiters: deque[asyncio.Future[str]] = deque()
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -105,8 +105,8 @@ class Record:
     async def pop(self, timeout:str = "") -> str:
         """popping first element from list"""
         if timeout or self._waiters:
-            loop = get_event_loop()
-            waiter: Future[str] = loop.create_future()
+            loop = asyncio.get_event_loop()
+            waiter: asyncio.Future[str] = loop.create_future()
             self._waiters.append(waiter)
-            return await waiter
+            return await asyncio.wait_for(waiter, None)
         return self.rlist.popleft()

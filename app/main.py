@@ -23,18 +23,23 @@ async def start_server():
 async def main(args):
     """main function to start our redis journey"""
     # You can use print statements as follows for debugging, they'll be visible when running tests.
+    print("Starting init and setting default values")
     init(args=vars(args))
 
     # create an asyncio server
+    print("Setting server")
     server = await asyncio.start_server(handler, "127.0.0.1", port=args.port)
     # return server
 
+    print("Setting replication task")
     replication_task = asyncio.create_task(info.replication())
 
     try:
+        print("Starting server")
         async with server:
             await server.serve_forever()
     finally:
+        print("Closing replication")
         replication_task.cancel()
         try:
             await replication_task
@@ -65,9 +70,11 @@ async def handler(reader: StreamReader, writer: StreamWriter):
 
 
 if __name__ == "__main__":
+    print("Started app")
     arguments.add_argument("--dir")
     arguments.add_argument("--dbfilename")
     arguments.add_argument("--port", default=6379)
     arguments.add_argument("--replicaof", default="")
     init_args = arguments.parse_args()
+    print("Started asyncio process")
     asyncio.run(main(args=init_args))

@@ -69,7 +69,7 @@ class KeyStore:
         """get record type"""
         if key in self.keys:
             return self.keys[key].type()
-        return ""
+        return "none"
 
 # singleton instance
 keystore = KeyStore()

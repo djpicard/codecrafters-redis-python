@@ -3,7 +3,7 @@
 import traceback
 from typing import Callable, Dict
 
-from app.utils.encoder import encode
+from ..utils.encoder import encode
 
 
 class CommandRegistry:

@@ -5,9 +5,9 @@ import asyncio
 from asyncio import StreamReader, StreamWriter
 
 # import app.handlers as handlers # pylint: disable=unused-import
-from app.classes.Registry import registry
-from app.handlers import configs, default, info, rlist  # pylint: disable=unused-import
-from app.utils.utils import init
+from .classes.Registry import registry
+from .handlers import configs, default, info, rlist  # pylint: disable=unused-import
+from .utils.utils import init
 
 arguments = argparse.ArgumentParser()
 # dictionary to store any data sent

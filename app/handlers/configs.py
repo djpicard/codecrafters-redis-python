@@ -1,7 +1,7 @@
 """functions to handle configurations"""
 
-from app.classes.Keystore import keystore
-from app.classes.Registry import registry
+from ..classes.Keystore import keystore
+from ..classes.Registry import registry
 
 
 # configs

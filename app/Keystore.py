@@ -23,13 +23,14 @@ class KeyStore:
 
         return self.set(key=key, value=val, px=px)
 
-    def push_list(self, key:str, value: str) -> int:
+    def push_list(self, key:str, value: str, right:bool) -> int:
         """pushing data into a list, creating a new one is non exists"""
         if not key in self.keys:
             record: Record = Record(Mode.LIST)
             self.keys[key] = record
 
-        return self.keys[key].push(value)
+        return self.keys[key].push(value, right)
+
 
     def set(self, key:str, value: str, args: str = "", px:int = -1) -> str: # pylint: disable=unused-argument
         """setting data with key value pair"""

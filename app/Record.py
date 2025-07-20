@@ -61,9 +61,12 @@ class Record:
                 datetime.now(timezone.utc).now() + timedelta(milliseconds=int(self.px))
             ).timestamp()
 
-    def push(self, value: str) -> int:
+    def push(self, value: str, right:bool) -> int:
         """push data into list"""
-        self.rlist.append(value)
+        if right:
+            self.rlist.append(value)
+        else:
+            self.rlist.insert(0, value)
         return len(self.rlist)
 
     def __str__(self) -> str:
@@ -78,9 +81,6 @@ class Record:
 
     def get_records(self, start:str, end:str) -> list[str]:
         """get a set of records"""
-        print(self.rlist)
-        print(start + " " + end)
-        print(self.rlist[int(start):int(end) + 1])
         if end == "-1":
             return self.rlist[int(start):]
         return self.rlist[int(start):int(end) + 1]

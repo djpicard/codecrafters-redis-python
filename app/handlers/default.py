@@ -25,3 +25,9 @@ def get_key(key: str | list[str]) -> str:
     """getting data with specific key"""
     print(f"Getting key: {key}")
     return keystore.get(key=key)
+
+@registry.register("TYPE")
+def get_type(key: str) -> str:
+    """getting type for the specific key"""
+    print(f"Getting type {key}")
+    return keystore.get_type(key=key)

@@ -1,5 +1,6 @@
 """command registry"""
 # command_registry.py
+import traceback
 from typing import Callable, Dict
 
 from app.utils.encoder import encode
@@ -38,6 +39,7 @@ class CommandRegistry:
             return encode(handler(*args))
         except Exception as e: # pylint: disable=broad-exception-caught
             print(f"Error handling command {cmd}: {str(e)}")
+            print(traceback.format_exc())
             return "$-1"
 
 # Singleton instance

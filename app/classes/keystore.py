@@ -1,6 +1,5 @@
 """keystore to handle all redis data"""
-from app.classes.Record import Record
-from app.classes.RList import RList
+from app.classes.Record import Mode, Record
 
 
 class KeyStore:
@@ -8,20 +7,17 @@ class KeyStore:
     def __init__(self):
         """initialize and empty dictionary"""
         self.keys: dict[str, Record] = {}
-        self.lists: dict[str, RList] = {}
-        print(self.keys)
         self.keys.clear()
 
     def clear(self):
         """clear datastore, mostly used for testing"""
         self.keys.clear()
-        self.lists.clear()
 
     def set_array(self, data: list[str]) -> str:
         """setting data with key value pair"""
-        key = data[0]
-        val = data[1]
-        px = -1  # pylint: disable=invalid-name
+        key: str = data[0]
+        val: str = data[1]
+        px: int  = -1  # pylint: disable=invalid-name
         if len(data) > 2:
             px = int(data[3])  # pylint: disable=invalid-name
 
@@ -29,15 +25,21 @@ class KeyStore:
 
     def push_list(self, key:str, value:str) -> int:
         """pushing data into a list, creating a new one is non exists"""
-        rlist: RList = self.lists[key] if key in self.lists else RList()
-        return rlist.push(value)
+        if not key in self.keys:
+            record: Record = Record(Mode.LIST)
+            self.keys[key] = record
+
+        return self.keys[key].push(value)
 
     def set(self, key:str, value: str, args: str = "", px:int = -1) -> str: # pylint: disable=unused-argument
         """setting data with key value pair"""
-        # set record and put it into the datastore
-        record: Record = Record(value=value, px=int(px))
-        self.keys[key] = record
-        if self.keys[key] != record:
+        if not key in self.keys:
+            record: Record = Record(Mode.KEY)
+            self.keys[key] = record
+
+        self.keys[key].set(value=value, px=px)
+
+        if not key in self.keys:
             return "$-1"  # "-ERR unable to set record into the datastore"
         return "+OK"
 
@@ -53,20 +55,21 @@ class KeyStore:
 
     def _get(self, key:str) -> str:
         """internal get command"""
-        print(f"Checking keystore: {key}")
         if not key in self.keys:
-            print(f"Keystore doesn't have key {key}")
             return "$-1"
-        record: Record = self.keys[key]
-        print(f"Found record: {record}")
-        return record.get()
+        return self.keys[key].get()
 
     def key_exists(self, key:str) -> bool:
         """checking key existance"""
-        print(f"Keystore: {self.keys}")
         if key in self.keys:
             return True
         return False
+
+    def get_type(self, key:str) -> str:
+        """get record type"""
+        if key in self.keys:
+            return self.keys[key].type()
+        return ""
 
 # singleton instance
 keystore = KeyStore()

@@ -71,5 +71,11 @@ class KeyStore:
             return self.keys[key].type()
         return "none"
 
+    def lrange(self, key:str, start:str, end:str) -> list[str]:
+        """get set of record values"""
+        if key in self.keys:
+            return self.keys[key].get_records(start=start, end=end)
+        return []
+
 # singleton instance
 keystore = KeyStore()

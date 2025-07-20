@@ -75,3 +75,7 @@ class Record:
     def type(self) -> str:
         """getting data type for the record"""
         return self.mode.value
+
+    def get_records(self, start:str, end:str) -> list[str]:
+        """get a set of records"""
+        return self.rlist[int(start):int(end)]

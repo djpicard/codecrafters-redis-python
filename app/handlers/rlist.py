@@ -12,3 +12,8 @@ def rpush(rlist: str, *val: str) -> int:
     for x in val:
         output = keystore.push_list(key=rlist, value=x)
     return output
+
+@registry.register("LRANGE")
+def lrange(key:str, start: str, end:str) -> list[str]:
+    """handle lrange and return list"""
+    return keystore.lrange(key=key, start=start, end=end)

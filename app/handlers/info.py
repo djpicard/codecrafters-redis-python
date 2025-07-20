@@ -2,7 +2,7 @@
 
 import asyncio
 
-from ..classes.Keystore import keystore
+from ..Keystore import keystore
 from ..Registry import registry
 from ..utils.encoder import encode  # pylint: disable=import-error
 

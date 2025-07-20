@@ -1,6 +1,6 @@
 """functions to handle configurations"""
 
-from ..classes.Keystore import keystore
+from ..Keystore import keystore
 from ..Registry import registry
 
 

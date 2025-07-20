@@ -1,6 +1,6 @@
 """list functions"""
 
-from ..classes.Keystore import keystore
+from ..Keystore import keystore
 from ..Registry import registry
 
 

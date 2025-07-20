@@ -1,6 +1,6 @@
 """utility functions"""
-from ..classes.Keystore import keystore
 from ..handlers.info import init_repl
+from ..Keystore import keystore
 
 
 def init(args: dict[str, str]) -> None:

@@ -1,6 +1,6 @@
 """functions for commands"""
 
-from ..classes.Keystore import keystore
+from ..Keystore import keystore
 from ..Registry import registry
 
 

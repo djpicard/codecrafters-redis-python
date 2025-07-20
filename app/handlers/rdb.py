@@ -2,8 +2,6 @@
 
 import os
 
-# from app.classes.keystore import keystore
-
 MAGIC = "REDIS"
 VERSION = "0011"
 

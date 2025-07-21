@@ -9,6 +9,7 @@ def incr(key:str) -> int | str:
     """increment int value"""
     return keystore.incr(key=key)
 
+@registry.register("MULTI")
 def multi() -> str:
     """set transaction capture"""
     transaction.active = True

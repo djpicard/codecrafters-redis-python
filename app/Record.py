@@ -108,7 +108,7 @@ class Record:
         """popping first element from list"""
         return self.rlist.popleft()
 
-    async def bpop(self, timeout:str = "") -> str:
+    async def blpop(self, timeout:str = "") -> str:
         """blocking pop"""
         if self.rlist:
             return self.rlist.popleft()

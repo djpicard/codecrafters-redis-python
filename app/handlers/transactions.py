@@ -5,15 +5,20 @@ from app.classes.Registry import registry
 
 
 @registry.register("INCR")
-def incr(key:str) -> int | str:
+def cmd_incr(key:str) -> int | str:
     """increment int value"""
     return keystore.incr(key=key)
 
 @registry.register("MULTI")
-def multi() -> str:
+def cmd_multi() -> str:
     """set transaction capture"""
     transaction.active = True
     return "+OK"
+
+@registry.register("EXEC")
+def cmd_exec() -> str :
+    """handles bad exec command"""
+    return "-ERR EXEC without MULTI"
 
 class Transaction:
     """class to handle a transaction"""
@@ -21,8 +26,11 @@ class Transaction:
         self.cmds: list[str] = []
         self.active: bool    = False
 
-    def queue(self, item: str) -> str:
+    async def queue(self, item: str) -> str | list[str]:
         """queue commands"""
+        if item.split("\r\n")[1] == "EXEC":
+            self.unset_active()
+            return await self.__run__()
         self.cmds.append(item)
         return "QUEUED"
 
@@ -41,5 +49,12 @@ class Transaction:
     def is_active(self) -> bool:
         """returns if the transaction is actively capturing records"""
         return self.active
+
+    async def __run__(self) -> list[str]:
+        """runs the saved commands"""
+        output: list[str] = []
+        for x in self.cmds:
+            output.append(await registry.handle(x))
+        return output
 
 transaction = Transaction()

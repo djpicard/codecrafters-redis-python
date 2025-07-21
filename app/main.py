@@ -60,7 +60,7 @@ async def handler(reader: StreamReader, writer: StreamWriter):
         if not transactions.transaction.is_active():
             resp = await registry.handle(message)
         else:
-            resp = transactions.transaction.queue(message)
+            resp = await transactions.transaction.queue(message)
 
         writer.write(encode(resp).encode())
         await writer.drain()

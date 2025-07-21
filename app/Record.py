@@ -103,12 +103,11 @@ class Record:
         """pop multiple values"""
         output: list[str] = []
         for _ in range(val):
-            output.append(self.rlist.pop())
+            output.append(self.rlist.popleft())
         return output
 
     def pop(self) -> str:
         """popping first element from list"""
-        print(self.rlist)
         return self.rlist.popleft()
 
     async def blpop(self, timeout:str = "") -> str:

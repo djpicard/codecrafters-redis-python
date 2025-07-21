@@ -28,7 +28,7 @@ class Record:
                 self.rlist: deque[str] = deque()
                 self._waiters: deque[asyncio.Future[str]] = deque()
             case Mode.INT:
-                self.int: int = 0
+                self.int_val: int = 0
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -47,7 +47,7 @@ class Record:
 
     def _get_int(self) -> str:
         """getting int data"""
-        return f"{self.int}"
+        return f"{self.int_val}"
 
     def _get_list(self) -> str:
         """getting list data"""
@@ -140,5 +140,6 @@ class Record:
 
     def incr(self) -> int:
         """increment int value"""
-        self.int += 1
-        return self.int
+        print(self.mode)
+        self.int_val += 1
+        return self.int_val

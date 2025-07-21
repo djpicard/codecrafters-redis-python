@@ -10,7 +10,6 @@ class Mode(Enum):
     """enum for mode types"""
     STRING  = "string"
     LIST    = "list"
-    INT     = "int"
 
 class Record:
     """record to contain all data needed for a redis record"""
@@ -27,8 +26,6 @@ class Record:
             case Mode.LIST:
                 self.rlist: deque[str] = deque()
                 self._waiters: deque[asyncio.Future[str]] = deque()
-            case Mode.INT:
-                self.int_val: int = 0
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -42,12 +39,6 @@ class Record:
                 return self._get_key()
             case Mode.LIST:
                 return self._get_list()
-            case Mode.INT:
-                return self._get_int()
-
-    def _get_int(self) -> str:
-        """getting int data"""
-        return f"{self.int_val}"
 
     def _get_list(self) -> str:
         """getting list data"""
@@ -141,5 +132,7 @@ class Record:
     def incr(self) -> int:
         """increment int value"""
         print(self.mode)
-        self.int_val += 1
-        return self.int_val
+        val: int = int(self.value)
+        val += 1
+        self.value = str(val)
+        return val

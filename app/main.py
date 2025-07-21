@@ -57,7 +57,10 @@ async def handler(reader: StreamReader, writer: StreamWriter):
             break
 
         message = data.decode()
-        resp = await registry.handle(message)
+        if not transactions.transaction.is_active():
+            resp = await registry.handle(message)
+        else:
+            resp = transactions.transaction.queue(message)
 
         writer.write(encode(resp).encode())
         await writer.drain()

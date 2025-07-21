@@ -2,7 +2,6 @@
 
 def encode(val: str | list[str]) -> str:
     """encode for redis protocol"""
-    print(f"Encoding return value: {val}")
     match (val):
         case str():
             return _simple_resp(val)
@@ -14,7 +13,6 @@ def encode(val: str | list[str]) -> str:
             return _simple_resp(
                 "-ERR Not all data types have been implemented"
             )
-
 
 def _simple_resp(val: str) -> str:
     """simple resp"""

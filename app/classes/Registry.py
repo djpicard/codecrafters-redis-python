@@ -28,7 +28,6 @@ class CommandRegistry:
         cmd = parts[0].upper()
         args = parts[1:]
 
-        print(f"CMD: {cmd}, args: {args}, parts: {parts}")
         handler = self._commands.get(cmd)
         if not handler:
             print(f"Unknown command: {cmd}")

@@ -129,11 +129,14 @@ class Record:
             self._waiters.remove(future)
             return "$-1"
 
-    def incr(self) -> int:
+    def incr(self) -> int | str:
         """increment int value"""
         if not self.value:
             self.value = "0"
-        val: int = int(self.value)
-        val += 1
-        self.value = str(val)
+        try:
+            val: int = int(self.value)
+            val += 1
+            self.value = str(val)
+        except TypeError:
+            return "-ERR value is not an integer or out of range"
         return val

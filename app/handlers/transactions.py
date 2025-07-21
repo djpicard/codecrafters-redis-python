@@ -12,7 +12,6 @@ def cmd_incr(key:str) -> int | str:
 @registry.register("MULTI")
 def cmd_multi() -> str:
     """set transaction capture"""
-    transaction.active = True
     return "+OK"
 
 @registry.register("EXEC")
@@ -23,15 +22,15 @@ def cmd_exec() -> str :
 class Transaction:
     """class to handle a transaction"""
     def __init__(self):
-        self.cmds: list[str] = []
-        self.active: bool    = False
+        self._cmds: list[str] = []
+        self._active: bool    = False
 
     async def queue(self, item: str) -> str | list[str]:
         """queue commands"""
         if "EXEC" in item.split("\r\n"):
             self.unset_active()
             return await self.__run__()
-        self.cmds.append(item)
+        self._cmds.append(item)
         return "QUEUED"
 
     def exec(self) -> str:
@@ -40,21 +39,19 @@ class Transaction:
 
     def set_active(self) -> None:
         """setting transactions to actively capture"""
-        self.active = True
+        self._active = True
 
     def unset_active(self) -> None:
         """unset transactions"""
-        self.active = False
+        self._active = False
 
     def is_active(self) -> bool:
         """returns if the transaction is actively capturing records"""
-        return self.active
+        return self._active
 
     async def __run__(self) -> list[str]:
         """runs the saved commands"""
         output: list[str] = []
-        for x in self.cmds:
+        for x in self._cmds:
             output.append(await registry.handle(x))
         return output
-
-transaction = Transaction()

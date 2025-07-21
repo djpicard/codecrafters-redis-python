@@ -6,6 +6,7 @@ from asyncio import StreamReader, StreamWriter
 
 from .handlers import configs, default, info, rlist  # pylint: disable=unused-import
 from .Registry import registry
+from .utils.encoder import encode
 from .utils.utils import init
 
 arguments = argparse.ArgumentParser()
@@ -50,9 +51,9 @@ async def handler(reader: StreamReader, writer: StreamWriter):
             break
 
         message = data.decode()
-        resp = registry.handle(message)
+        resp = await registry.handle(message)
 
-        writer.write(resp.encode())
+        writer.write(encode(resp).encode())
         await writer.drain()
 
     writer.close()

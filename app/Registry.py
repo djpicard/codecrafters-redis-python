@@ -1,9 +1,8 @@
 """command registry"""
 # command_registry.py
+import inspect
 import traceback
 from typing import Callable, Dict
-
-from .utils.encoder import encode
 
 
 class CommandRegistry:
@@ -20,7 +19,7 @@ class CommandRegistry:
             return func
         return decorator
 
-    def handle(self, command_line:str) -> str:
+    async def handle(self, command_line:str) -> str:
         """handle function call"""
         if not command_line:
             return "Empty command"
@@ -36,7 +35,11 @@ class CommandRegistry:
             return "$-1"
 
         try:
-            return encode(handler(*args))
+            if inspect.iscoroutinefunction(handler):
+                result = await handler(*args)
+            else:
+                result = handler(*args)
+            return result
         except Exception as e: # pylint: disable=broad-exception-caught
             print(f"Error handling command {cmd}: {str(e)}")
             print(traceback.format_exc())

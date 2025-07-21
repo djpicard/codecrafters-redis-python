@@ -131,7 +131,8 @@ class Record:
 
     def incr(self) -> int:
         """increment int value"""
-        print(self.mode)
+        if not self.value:
+            self.value = "0"
         val: int = int(self.value)
         val += 1
         self.value = str(val)

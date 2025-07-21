@@ -94,10 +94,10 @@ class KeyStore:
 
     async def blpop(self, key:str, timeout:float) -> str | list[str]:
         """blocking left pop"""
-        if key in self.keys:
-            output = await self.keys[key].blpop(timeout=timeout)
-            return [key, output]
-        return "$-1"
+        if not key in self.keys:
+            self.keys[key] = Record(Mode.LIST)
+        output = await self.keys[key].blpop(timeout=timeout)
+        return [key, output]
 
 # singleton instance
 keystore = KeyStore()

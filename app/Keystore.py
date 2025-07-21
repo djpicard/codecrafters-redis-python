@@ -97,6 +97,8 @@ class KeyStore:
         if not key in self.keys:
             self.keys[key] = Record(Mode.LIST)
         output = await self.keys[key].blpop(timeout=timeout)
+        if output == "$-1":
+            return output
         return [key, output]
 
 # singleton instance

@@ -108,6 +108,7 @@ class Record:
 
     def pop(self) -> str:
         """popping first element from list"""
+        print(self.rlist)
         return self.rlist.popleft()
 
     async def blpop(self, timeout:str = "") -> str:

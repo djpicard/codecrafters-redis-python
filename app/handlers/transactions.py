@@ -28,7 +28,7 @@ class Transaction:
 
     async def queue(self, item: str) -> str | list[str]:
         """queue commands"""
-        if item.split("\r\n")[1] == "EXEC":
+        if "EXEC" in item.split("\r\n"):
             self.unset_active()
             return await self.__run__()
         self.cmds.append(item)

@@ -19,7 +19,7 @@ def encode(val: str | list[str]) -> str:
 def _simple_resp(val: str) -> str:
     """simple resp"""
     size = len(val)
-    if val.startswith("+") or val.startswith("$"):
+    if val.startswith("+") or val.startswith("$") or val.startswith("-"):
         return f"{val}\r\n"
     if size <= 0:
         return "$-1\r\n"

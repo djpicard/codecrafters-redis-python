@@ -137,6 +137,6 @@ class Record:
             val: int = int(self.value)
             val += 1
             self.value = str(val)
-        except TypeError:
+        except ValueError:
             return "-ERR value is not an integer or out of range"
         return val

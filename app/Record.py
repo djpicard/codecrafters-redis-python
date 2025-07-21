@@ -26,7 +26,6 @@ class Record:
             case Mode.LIST:
                 self.rlist: deque[str] = deque()
                 self._waiters: deque[asyncio.Future[str]] = deque()
-                self._event: asyncio.Event = asyncio.Event()
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -67,17 +66,19 @@ class Record:
 
     async def push(self, value: str, right:bool) -> int:
         """push data into list"""
-        while self._waiters:
-            future = self._waiters.popleft()
-            if not future.done():
-                future.set_result(value)
-                return 0
         if right:
             self.rlist.append(value)
         else:
             self.rlist.appendleft(value)
-        self._event.set()
-        return len(self.rlist)
+        output = len(self.rlist)
+
+        while self._waiters:
+            future = self._waiters.popleft()
+            if not future.done():
+                future.set_result(self.rlist.popleft())
+                return output
+
+        return output
 
     def __str__(self) -> str:
         return f"{self.value}, px: {self.px}, timeout: {self.timeout}"

@@ -15,7 +15,7 @@ async def lpush(rlist: str, *val: str) -> int:
     return await _push(rlist, False, *val)
 
 async def _push(rlist: str, right:bool, *val: str) -> int:
-    """handle rpush and return list size"""
+    """handle *push and return list size"""
     print(f"Val: {val}")
     output:int = 0
     for x in val:

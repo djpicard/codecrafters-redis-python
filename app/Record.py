@@ -116,4 +116,6 @@ class Record:
         loop = asyncio.get_event_loop()
         waiter: asyncio.Future[str] = loop.create_future()
         self._waiters.append(waiter)
+        if not timeout or timeout == "0":
+            return await asyncio.wait_for(waiter, None)
         return await asyncio.wait_for(waiter, int(timeout))

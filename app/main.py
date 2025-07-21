@@ -4,6 +4,7 @@ import argparse
 import asyncio
 from asyncio import StreamReader, StreamWriter
 
+from app.classes.Registry import registry
 from app.handlers import (  # pylint: disable=unused-import
     configs,
     default,
@@ -11,7 +12,6 @@ from app.handlers import (  # pylint: disable=unused-import
     rlist,
     transactions,
 )
-from app.Registry import registry
 from app.utils.encoder import encode
 from app.utils.utils import init
 

@@ -1,7 +1,7 @@
 """list functions"""
 
-from ..Keystore import keystore
-from ..Registry import registry
+from app.classes.Keystore import keystore
+from app.classes.Registry import registry
 
 
 @registry.register("RPUSH")

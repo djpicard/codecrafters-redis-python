@@ -2,9 +2,9 @@
 
 import asyncio
 
-from ..Keystore import keystore
-from ..Registry import registry
-from ..utils.encoder import encode  # pylint: disable=import-error
+from app.classes.Keystore import keystore
+from app.classes.Registry import registry
+from app.utils.encoder import encode  # pylint: disable=import-error
 
 DEFAULT_MASTER_REPLID = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
 

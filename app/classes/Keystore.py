@@ -1,5 +1,5 @@
 """keystore to handle all redis data"""
-from .Record import Mode, Record
+from app.classes.Record import Mode, Record
 
 
 class KeyStore:

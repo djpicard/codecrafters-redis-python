@@ -110,7 +110,7 @@ class Record:
         """popping first element from list"""
         return self.rlist.popleft()
 
-    async def blpop(self, timeout:str = "") -> str:
+    async def blpop(self, timeout:float = 0.0) -> str:
         """blocking pop"""
         if self.rlist:
             return self.rlist.popleft()
@@ -120,7 +120,10 @@ class Record:
         self._waiters.append(future)
 
         try:
-            return await asyncio.wait_for(future, float(timeout)) if timeout and timeout != "0" else await future # pylint: disable=line-too-long
+            print(f"timeout: {timeout}")
+            if timeout and timeout > 0:
+                return await asyncio.wait_for(future, float(timeout))
+            return await future # pylint: disable=line-too-long
         except asyncio.TimeoutError:
             self._waiters.remove(future)
             return "$-1"

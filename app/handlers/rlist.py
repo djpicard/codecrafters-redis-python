@@ -40,4 +40,4 @@ async def lpop(key:str, val:str = "") -> str | list[str]:
 @registry.register("BLPOP")
 async def blpop(key:str, timeout:str = "") -> str | list[str]:
     """popping first element from list"""
-    return await keystore.blpop(key=key, timeout=timeout)
+    return await keystore.blpop(key=key, timeout=float(timeout))

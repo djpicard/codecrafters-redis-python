@@ -92,7 +92,7 @@ class KeyStore:
             return self.keys[key].pop()
         return "$-1"
 
-    async def blpop(self, key:str, timeout:str) -> str | list[str]:
+    async def blpop(self, key:str, timeout:float) -> str | list[str]:
         """blocking left pop"""
         if key in self.keys:
             output = await self.keys[key].blpop(timeout=timeout)

@@ -120,7 +120,7 @@ class Record:
         self._waiters.append(future)
 
         try:
-            return await asyncio.wait_for(future, int(timeout )) if timeout else await future
+            return await asyncio.wait_for(future, int(timeout)) if timeout and timeout != "0" else await future # pylint: disable=line-too-long
         except asyncio.TimeoutError:
             self._waiters.remove(future)
             return "$-1"

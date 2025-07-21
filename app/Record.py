@@ -64,15 +64,17 @@ class Record:
                 datetime.now(timezone.utc).now() + timedelta(milliseconds=int(self.px))
             ).timestamp()
 
-    def push(self, value: str, right:bool) -> int:
+    async def push(self, value: str, right:bool) -> int:
         """push data into list"""
         if self._waiters:
             future = self._waiters.popleft()
-            future.set_result(value)
-        if right:
-            self.rlist.append(value)
+            if not future.done:
+                future.set_result(value)
         else:
-            self.rlist.appendleft(value)
+            if right:
+                self.rlist.append(value)
+            else:
+                self.rlist.appendleft(value)
         return len(self.rlist)
 
     def __str__(self) -> str:
@@ -102,11 +104,16 @@ class Record:
             output.append(self.rlist.pop())
         return output
 
-    async def pop(self, timeout:str = "") -> str:
+    def pop(self) -> str:
         """popping first element from list"""
-        if timeout or self._waiters:
-            loop = asyncio.get_event_loop()
-            waiter: asyncio.Future[str] = loop.create_future()
-            self._waiters.append(waiter)
-            return await asyncio.wait_for(waiter, None)
         return self.rlist.popleft()
+
+    async def bpop(self, timeout:str = "") -> str:
+        """blocking pop"""
+        if self.rlist:
+            return self.rlist.popleft()
+
+        loop = asyncio.get_event_loop()
+        waiter: asyncio.Future[str] = loop.create_future()
+        self._waiters.append(waiter)
+        return await asyncio.wait_for(waiter, int(timeout))

@@ -23,13 +23,13 @@ class KeyStore:
 
         return self.set(key=key, value=val, px=px)
 
-    def push_list(self, key:str, value: str, right:bool) -> int:
+    async def push_list(self, key:str, value: str, right:bool) -> int:
         """pushing data into a list, creating a new one is non exists"""
         if not key in self.keys:
             record: Record = Record(Mode.LIST)
             self.keys[key] = record
 
-        return self.keys[key].push(value, right)
+        return await self.keys[key].push(value, right)
 
 
     def set(self, key:str, value: str, args: str = "", px:int = -1) -> str: # pylint: disable=unused-argument
@@ -89,14 +89,14 @@ class KeyStore:
         if key in self.keys:
             if val:
                 return self.keys[key].mpop(val=int(val))
-            return await self.keys[key].pop()
+            return self.keys[key].pop()
         return "$-1"
 
     async def blpop(self, key:str, timeout:str) -> str:
         """blocking left pop"""
         print(timeout)
         if key in self.keys:
-            return await self.keys[key].pop()
+            return await self.keys[key].bpop()
         return "$-1"
 
 # singleton instance

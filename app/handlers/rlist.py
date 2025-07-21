@@ -5,21 +5,21 @@ from ..Registry import registry
 
 
 @registry.register("RPUSH")
-def rpush(rlist: str, *val: str) -> int:
+async def rpush(rlist: str, *val: str) -> int:
     """handle rpush and return list size"""
-    return _push(rlist, True, *val)
+    return await _push(rlist, True, *val)
 
 @registry.register("LPUSH")
-def lpush(rlist: str, *val: str) -> int:
+async def lpush(rlist: str, *val: str) -> int:
     """handle lpush and return list size"""
-    return _push(rlist, False, *val)
+    return await _push(rlist, False, *val)
 
-def _push(rlist: str, right:bool, *val: str) -> int:
+async def _push(rlist: str, right:bool, *val: str) -> int:
     """handle rpush and return list size"""
     print(f"Val: {val}")
     output:int = 0
     for x in val:
-        output = keystore.push_list(key=rlist, value=x, right=right)
+        output = await keystore.push_list(key=rlist, value=x, right=right)
     return output
 
 @registry.register("LRANGE")

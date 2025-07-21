@@ -2,6 +2,7 @@
 
 def encode(val: str | list[str]) -> str:
     """encode for redis protocol"""
+    print(f"Val: {val}")
     match (val):
         case str():
             return _simple_resp(val)

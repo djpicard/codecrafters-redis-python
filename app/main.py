@@ -4,7 +4,13 @@ import argparse
 import asyncio
 from asyncio import StreamReader, StreamWriter
 
-from .handlers import configs, default, info, rlist  # pylint: disable=unused-import
+from .handlers import (  # pylint: disable=unused-import
+    configs,
+    default,
+    info,
+    rlist,
+    transactions,
+)
 from .Registry import registry
 from .utils.encoder import encode
 from .utils.utils import init

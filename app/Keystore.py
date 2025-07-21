@@ -101,5 +101,11 @@ class KeyStore:
             return output
         return [key, output]
 
+    def incr(self, key:str):
+        """increment int value"""
+        if not key in self.keys:
+            self.keys[key] = Record(Mode.STRING)
+        return self.keys[key].incr()
+
 # singleton instance
 keystore = KeyStore()

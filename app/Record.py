@@ -10,6 +10,7 @@ class Mode(Enum):
     """enum for mode types"""
     STRING  = "string"
     LIST    = "list"
+    INT     = "int"
 
 class Record:
     """record to contain all data needed for a redis record"""
@@ -26,6 +27,8 @@ class Record:
             case Mode.LIST:
                 self.rlist: deque[str] = deque()
                 self._waiters: deque[asyncio.Future[str]] = deque()
+            case Mode.INT:
+                self.int: int = 0
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -39,6 +42,12 @@ class Record:
                 return self._get_key()
             case Mode.LIST:
                 return self._get_list()
+            case Mode.INT:
+                return self._get_int()
+
+    def _get_int(self) -> str:
+        """getting int data"""
+        return f"{self.int}"
 
     def _get_list(self) -> str:
         """getting list data"""
@@ -128,3 +137,8 @@ class Record:
         except asyncio.TimeoutError:
             self._waiters.remove(future)
             return "$-1"
+
+    def incr(self) -> int:
+        """increment int value"""
+        self.int += 1
+        return self.int

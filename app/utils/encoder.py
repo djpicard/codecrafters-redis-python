@@ -20,6 +20,8 @@ def encode(val) -> str: # pylint: disable=too-many-return-statements,line-too-lo
 
 def _exception_resp(val: Exception):
     """exception resp"""
+    print(val)
+    print(val.args)
     return f"{val.args}\r\n"
 
 def _null_resp() -> str:

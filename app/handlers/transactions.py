@@ -49,6 +49,12 @@ class Transaction:
         """returns if the transaction is actively capturing records"""
         return self._active
 
+    def _to_str(self, x, encoding='utf-8', errors='strict') -> str:
+        """convert all values to string"""
+        if isinstance(x, bytes):
+            return x.decode(encoding, errors)
+        return str(x)
+
     async def __run__(self) -> list[str]:
         """runs the saved commands"""
         output: list[str] = []
@@ -56,5 +62,4 @@ class Transaction:
             tmp = await registry.handle(x)
             output.append(tmp)
 
-        print(f"Output: {output}")
-        return output
+        return [self._to_str(x) for x in output]

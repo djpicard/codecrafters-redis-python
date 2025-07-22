@@ -54,9 +54,7 @@ class Transaction:
         output: list[str] = []
         for x in self._cmds:
             tmp = await registry.handle(x)
-            try:
-                output.append(tmp.encode().decode())
-            except: # pylint: disable=bare-except
-                output.append(tmp)
+            output.append(tmp)
 
+        print(f"Output: {output}")
         return output

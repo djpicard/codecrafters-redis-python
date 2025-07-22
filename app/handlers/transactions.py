@@ -25,7 +25,7 @@ class Transaction:
         self._cmds: list[str] = []
         self._active: bool    = False
 
-    async def queue(self, item: str) -> str | bytes:
+    async def queue(self, item: str) -> str | list[str]:
         """queue commands"""
         if "EXEC" in item.split("\r\n"):
             self.unset_active()
@@ -49,9 +49,9 @@ class Transaction:
         """returns if the transaction is actively capturing records"""
         return self._active
 
-    async def __run__(self) -> bytes:
+    async def __run__(self) -> list[str]:
         """runs the saved commands"""
         output: list[str] = []
         for x in self._cmds:
             output.append(str(await registry.handle(x)))
-        return "\r\n".join(output).encode()
+        return output

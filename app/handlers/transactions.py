@@ -2,6 +2,7 @@
 
 from app.classes.Keystore import keystore
 from app.classes.Registry import registry
+from app.utils.encoder import encode
 
 
 @registry.register("INCR")
@@ -60,6 +61,5 @@ class Transaction:
         output: list[str] = []
         for x in self._cmds:
             tmp = await registry.handle(x)
-            output.append(tmp)
-
-        return [self._to_str(x) for x in output]
+            output.append(encode(tmp))
+        return output

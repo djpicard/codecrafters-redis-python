@@ -53,5 +53,5 @@ class Transaction:
         """runs the saved commands"""
         output: list[str] = []
         for x in self._cmds:
-            output.append(await registry.handle(x))
+            output.append(str(await registry.handle(x)))
         return output

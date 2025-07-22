@@ -65,8 +65,7 @@ class Transaction:
                 output.append(tmp)
             elif isinstance(tmp, bytes):
                 x:str  = tmp.decode()
-                output.append(encode(x))
-                print(f"Convert: {tmp}, {x}, {encode(tmp)}, {encode(x)}")
+                output.append(encode(int(x)))
             else:
                 output.append(encode(tmp))
         return output

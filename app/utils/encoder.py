@@ -1,6 +1,6 @@
 """encode data to adhere to redis return values"""
 
-def encode(val: str | list[str] | bytes | Exception | None) -> str: # pylint: disable=too-many-return-statements,line-too-long
+def encode(val: str | list[str] | bytes | Exception | int | None) -> str: # pylint: disable=too-many-return-statements,line-too-long
     """encode for redis protocol"""
     print(f"Val: {val}")
     match (val):

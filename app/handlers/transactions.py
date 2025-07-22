@@ -20,17 +20,30 @@ def cmd_exec() -> Exception :
     """handles bad exec command"""
     return Exception("-ERR EXEC without MULTI")
 
+@registry.register("DISCARD")
+def cmd_discard() -> Exception :
+    """handles bad discard command"""
+    return Exception("-ERR DISCARD without MULTI")
+
 class Transaction:
     """class to handle a transaction"""
     def __init__(self):
         self._cmds: list[str] = []
         self._active: bool    = False
 
+    def clear(self):
+        """resets data for a transaction"""
+        self._cmds.clear()
+        self._active = False
+        return "+OK\r\n"
+
     async def queue(self, item: str) -> str:
         """queue commands"""
         if "EXEC" in item.split("\r\n"):
             self.unset_active()
             return await self.__run__()
+        if "DISCARD" in item.split("\r\n"):
+            return self.clear()
         self._cmds.append(item)
         return "+QUEUED\r\n"
 

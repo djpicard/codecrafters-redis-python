@@ -33,11 +33,11 @@ def length(key:str) -> int:
     return keystore.length(key=key)
 
 @registry.register("LPOP")
-async def lpop(key:str, val:str = "") -> str | list[str]:
+async def lpop(key:str, val:str = "") -> str | list[str] | None:
     """popping first element from list"""
     return await keystore.lpop(key=key, val=val)
 
 @registry.register("BLPOP")
-async def blpop(key:str, timeout:str = "") -> str | list[str]:
+async def blpop(key:str, timeout:str = "") -> str | list[str] | None:
     """popping first element from list"""
     return await keystore.blpop(key=key, timeout=float(timeout))

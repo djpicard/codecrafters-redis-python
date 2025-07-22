@@ -32,7 +32,7 @@ class Record:
         if self.rlist:
             self.rlist.clear()
 
-    def get(self) -> str:
+    def get(self) -> bytes | None:
         """default get data"""
         match(self.mode):
             case Mode.STRING:
@@ -40,16 +40,16 @@ class Record:
             case Mode.LIST:
                 return self._get_list()
 
-    def _get_list(self) -> str:
+    def _get_list(self) -> bytes:
         """getting list data"""
-        return f"{self.rlist}"
+        return f"{self.rlist}".encode()
 
-    def _get_key(self) -> str:
+    def _get_key(self) -> bytes | None:
         """get the value if timeout has not expired"""
         if int(self.px) > 0:
             if self.timeout < datetime.now(timezone.utc).timestamp():
-                return "$-1"
-        return self.value
+                return None
+        return self.value.encode()
 
     def set(self, value:str, px: int = -1) -> None:
         """set command for all types that the record could contain"""
@@ -111,7 +111,7 @@ class Record:
         """popping first element from list"""
         return self.rlist.popleft()
 
-    async def blpop(self, timeout:float = 0.0) -> str:
+    async def blpop(self, timeout:float = 0.0) -> str | None:
         """blocking pop"""
         if self.rlist:
             return self.rlist.popleft()
@@ -127,9 +127,9 @@ class Record:
             return await future # pylint: disable=line-too-long
         except asyncio.TimeoutError:
             self._waiters.remove(future)
-            return "$-1"
+            return None
 
-    def incr(self) -> int | str:
+    def incr(self) -> int | str | Exception:
         """increment int value"""
         if not self.value:
             self.value = "0"
@@ -138,5 +138,5 @@ class Record:
             val += 1
             self.value = str(val)
         except ValueError:
-            return "-ERR value is not an integer or out of range"
+            return Exception("-ERR value is not an integer or out of range")
         return val

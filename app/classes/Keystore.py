@@ -13,7 +13,7 @@ class KeyStore:
         """clear datastore, mostly used for testing"""
         self.keys.clear()
 
-    def set_array(self, data: list[str]) -> str:
+    def set_array(self, data: list[str]) -> str | None:
         """setting data with key value pair"""
         key: str = data[0]
         val: str = data[1]
@@ -32,7 +32,7 @@ class KeyStore:
         return await self.keys[key].push(value, right)
 
 
-    def set(self, key:str, value: str, args: str = "", px:int = -1) -> str: # pylint: disable=unused-argument
+    def set(self, key:str, value: str, args: str = "", px:int = -1) -> str | None: # pylint: disable=unused-argument
         """setting data with key value pair"""
         if not key in self.keys:
             record: Record = Record(Mode.STRING)
@@ -41,10 +41,10 @@ class KeyStore:
         self.keys[key].set(value=value, px=px)
 
         if not key in self.keys:
-            return "$-1"  # "-ERR unable to set record into the datastore"
-        return "+OK"
+            return None  # "-ERR unable to set record into the datastore"
+        return "OK"
 
-    def get(self, key: str | list[str]) -> str:
+    def get(self, key: str | list[str]) -> bytes | None:
         """getting data with specific key"""
         match (key):
             case str():
@@ -52,12 +52,12 @@ class KeyStore:
             case list():
                 return self._get(key=key[0])
             case _:
-                return "$-1"
+                return None
 
-    def _get(self, key:str) -> str:
+    def _get(self, key:str) -> bytes | None:
         """internal get command"""
         if not key in self.keys:
-            return "$-1"
+            return None
         return self.keys[key].get()
 
     def key_exists(self, key:str) -> bool:
@@ -84,20 +84,20 @@ class KeyStore:
             return self.keys[key].length()
         return 0
 
-    async def lpop(self, key:str, val: str) -> str | list[str]:
+    async def lpop(self, key:str, val: str) -> str | list[str] | None:
         """left pop of rlist"""
         if key in self.keys:
             if val:
                 return self.keys[key].mpop(val=int(val))
             return self.keys[key].pop()
-        return "$-1"
+        return None
 
-    async def blpop(self, key:str, timeout:float) -> str | list[str]:
+    async def blpop(self, key:str, timeout:float) -> str | None | list[str]:
         """blocking left pop"""
         if not key in self.keys:
             self.keys[key] = Record(Mode.LIST)
         output = await self.keys[key].blpop(timeout=timeout)
-        if output == "$-1":
+        if output is None:
             return output
         return [key, output]
 

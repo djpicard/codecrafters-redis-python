@@ -19,7 +19,7 @@ class CommandRegistry:
             return func
         return decorator
 
-    async def handle(self, command_line:str) -> str:
+    async def handle(self, command_line:str) -> str | None:
         """handle function call"""
         if not command_line:
             return "Empty command"
@@ -31,7 +31,7 @@ class CommandRegistry:
         handler = self._commands.get(cmd)
         if not handler:
             print(f"Unknown command: {cmd}")
-            return "$-1"
+            return None
 
         try:
             if inspect.iscoroutinefunction(handler):
@@ -42,7 +42,7 @@ class CommandRegistry:
         except Exception as e: # pylint: disable=broad-exception-caught
             print(f"Error handling command {cmd}: {str(e)}")
             print(traceback.format_exc())
-            return "$-1"
+            return None
 
 # Singleton instance
 registry = CommandRegistry()

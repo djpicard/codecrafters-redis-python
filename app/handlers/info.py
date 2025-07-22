@@ -20,7 +20,7 @@ def init_repl() -> None:
         if keystore.get(key="replicaof") != "":
             keystore.set(key="role", value="slave")
 
-def info_repl() -> str:
+def info_repl() -> bytes:
     """retrieve replication info"""
     repl: list[str] = [
         "role",
@@ -30,16 +30,18 @@ def info_repl() -> str:
     output: list[str] = []
     for x in repl:  # pylint: disable=invalid-name
         if keystore.key_exists(key=x):
-            output.append(f"{x}:{keystore.get(key=x)}")
-    return "\r\n".join(output)
+            val = keystore.get(key=x)
+            if val:
+                output.append(f"{x}:{val.decode()}")
+    return "\r\n".join(output).encode()
 
 @registry.register("INFO")
-def info(command: str) -> str | list[str]:
+def info(command: str) -> bytes | None:
     """parse info commands"""
     match command.lower():
         case "replication":
             return info_repl()
-    return "$-1"
+    return None
 
 @registry.register("PSYNC")
 def psync(data:str, val:str) -> str:
@@ -71,14 +73,20 @@ async def replication():
     if not keystore.key_exists("replicaof"):
         return
 
-    host, port = keystore.get(key="replicaof").split()
-    if not host or not port:
-        return
+    val = keystore.get(key="replicaof")
+    host, port = ""
+    if val:
+        host, port = val.decode().split()
+        if not host or not port:
+            return
 
     print("Starting Replication")
+    lport = keystore.get("port")
+
+    local_port = lport.decode() if lport else ""
     message = [
         ["PING"],
-        ["REPLCONF", "listening-port", f"{keystore.get("port")}"],
+        ["REPLCONF", "listening-port", f"{local_port}"],
         ["REPLCONF", "capa", "psync2"],
         ["PSYNC", "?", "-1"],
     ]

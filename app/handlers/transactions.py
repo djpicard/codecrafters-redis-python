@@ -5,19 +5,19 @@ from app.classes.Registry import registry
 
 
 @registry.register("INCR")
-def cmd_incr(key:str) -> int | str:
+def cmd_incr(key:str) -> int | str | Exception:
     """increment int value"""
     return keystore.incr(key=key)
 
 @registry.register("MULTI")
 def cmd_multi() -> str:
     """set transaction capture"""
-    return "+OK"
+    return "OK"
 
 @registry.register("EXEC")
-def cmd_exec() -> str :
+def cmd_exec() -> Exception :
     """handles bad exec command"""
-    return "-ERR EXEC without MULTI"
+    return Exception("-ERR EXEC without MULTI")
 
 class Transaction:
     """class to handle a transaction"""

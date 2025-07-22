@@ -1,28 +1,43 @@
 """encode data to adhere to redis return values"""
 
-def encode(val: str | list[str]) -> str:
+def encode(val: str | list[str] | bytes | Exception | None) -> str: # pylint: disable=too-many-return-statements,line-too-long
     """encode for redis protocol"""
     print(f"Val: {val}")
     match (val):
-        case str():
+        case bytes():
             return _simple_resp(val)
+        case str():
+            return _simple_string(val)
         case list():
             return _bulk_resp(val)
         case int():
             return _int_resp(val)
+        case Exception():
+            return _exception_resp(val)
+        case None:
+            return _null_resp()
         case _:
-            return _simple_resp(
-                "-ERR Not all data types have been implemented"
-            )
+            return _exception_resp(Exception("-ERR Not all data types have been implemented"))
 
-def _simple_resp(val: str) -> str:
+def _exception_resp(val: Exception):
+    """exception resp"""
+    return f"{val.args}\r\n"
+
+def _null_resp() -> str:
+    """simple string"""
+    return "$-1\r\n"
+
+
+def _simple_string(val: str) -> str:
+    """simple string"""
+    return f"+{val}\r\n"
+
+
+def _simple_resp(val: bytes) -> str:
     """simple resp"""
-    size = len(val)
-    if val.startswith("+") or val.startswith("$") or val.startswith("-"):
-        return f"{val}\r\n"
-    if size <= 0:
-        return "$-1\r\n"
-    return f"${size}\r\n{val}\r\n"
+    value = val.decode()
+    size = len(value)
+    return f"${size}\r\n{value}\r\n"
 
 
 def _bulk_resp(val: list[str]) -> str:

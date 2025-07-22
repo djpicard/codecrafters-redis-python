@@ -52,6 +52,7 @@ async def test_info(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
         assert responses[0] == correct_returns[0]
     finally:
         server.close()
@@ -92,6 +93,7 @@ async def test_ping(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
         assert responses[0] == correct_returns[0]
     finally:
         server.close()
@@ -131,6 +133,7 @@ async def test_echo(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
         assert responses[0] == correct_returns[0]
     finally:
         server.close()
@@ -171,6 +174,7 @@ async def test_bad_get_commands(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
         assert responses[0] == correct_returns[0]
     finally:
         server.close()
@@ -212,6 +216,9 @@ async def test_set_get(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
+        print(f"Recv: {responses[1]} | Expt: {correct_returns[1]}")
+        print(f"Recv: {responses[2]} | Expt: {correct_returns[2]}")
         assert responses[0] == correct_returns[0]
         assert responses[1] == correct_returns[1]
         assert responses[2] == correct_returns[2]
@@ -263,9 +270,16 @@ async def test_set_get_px(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
+        print(f"Recv: {responses[1]} | Expt: {correct_returns[1]}")
+        print(f"Recv: {responses[2]} | Expt: {correct_returns[2]}")
+        print(f"Recv: {responses[3]} | Expt: {correct_returns[3]}")
+        print(f"Recv: {responses[4]} | Expt: {correct_returns[4]}")
         assert responses[0] == correct_returns[0]
         assert responses[1] == correct_returns[1]
         assert responses[2] == correct_returns[2]
+        assert responses[3] == correct_returns[3]
+        assert responses[4] == correct_returns[4]
     finally:
         server.close()
         await server.wait_closed()
@@ -312,6 +326,10 @@ async def test_set_get_configs(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
+        print(f"Recv: {responses[1]} | Expt: {correct_returns[1]}")
+        print(f"Recv: {responses[2]} | Expt: {correct_returns[2]}")
+        print(f"Recv: {responses[3]} | Expt: {correct_returns[3]}")
         assert responses[0] == correct_returns[0]
         assert responses[1] == correct_returns[1]
         assert responses[2] == correct_returns[2]
@@ -358,6 +376,9 @@ async def test_set_get_px_delay(caplog):
     try:
         # Run client and get echoed messages
         responses = await asyncio.wait_for(client(), timeout=5.0)
+        print(f"Recv: {responses[0]} | Expt: {correct_returns[0]}")
+        print(f"Recv: {responses[1]} | Expt: {correct_returns[1]}")
+        print(f"Recv: {responses[2]} | Expt: {correct_returns[2]}")
         assert responses[0] == correct_returns[0]
         assert responses[1] == correct_returns[1]
         assert responses[2] == correct_returns[2]

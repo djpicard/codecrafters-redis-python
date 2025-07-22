@@ -8,7 +8,6 @@ from app.classes.Registry import registry
 @registry.register("CONFIG")
 def configs(cmd: str, key:str, val:str = "") -> list[str] | bytes | str | Exception | None:
     """config subcommands"""
-    print(f"config command: {cmd}, val: {val}")
     match cmd:
         case "GET":
             return get_config(key=key)
@@ -27,7 +26,6 @@ def set_config(key: str, val: str) -> list[str] | str | None:
 
 def get_config(key: str) -> list[str] | bytes | None:
     """get config values"""
-    print(f"config get key: {key}")
     if keystore.key_exists(key=key):
         val = keystore.get(key=key)
         if val :

@@ -16,7 +16,6 @@ async def lpush(rlist: str, *val: str) -> int:
 
 async def _push(rlist: str, right:bool, *val: str) -> int:
     """handle *push and return list size"""
-    print(f"Val: {val}")
     output:int = 0
     for x in val:
         output = await keystore.push_list(key=rlist, value=x, right=right)

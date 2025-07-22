@@ -17,17 +17,14 @@ def echo(key: str) -> bytes:
 @registry.register("SET")
 def set_key(key:str, value: str, args: str = "", px:int = -1):
     """setting data with specific key"""
-    print(f"Setting key: {key}, value: {value}, px: {px}")
     return keystore.set(key, value, args, px)
 
 @registry.register("GET")
 def get_key(key: str | list[str]) -> bytes | None:
     """getting data with specific key"""
-    print(f"Getting key: {key}")
     return keystore.get(key=key)
 
 @registry.register("TYPE")
 def get_type(key: str) -> str:
     """getting type for the specific key"""
-    print(f"Getting type {key}")
     return keystore.get_type(key=key)

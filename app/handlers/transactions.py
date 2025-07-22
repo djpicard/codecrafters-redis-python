@@ -63,6 +63,9 @@ class Transaction:
             tmp = await registry.handle(x)
             if tmp == "OK":
                 output.append(tmp)
+            elif isinstance(tmp, bytes):
+                x:str  = tmp.decode()
+                output.append(encode(x))
             else:
                 output.append(encode(tmp))
         return output

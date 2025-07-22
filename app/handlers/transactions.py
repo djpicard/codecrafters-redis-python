@@ -60,5 +60,6 @@ class Transaction:
         """runs the saved commands"""
         output: list[str] = []
         for x in self._cmds:
-            output.append(encode(x))
+            output.append(encode(await registry.handle(x)))
+        print(output)
         return f"*{len(output)}\r\n" + "".join(output)

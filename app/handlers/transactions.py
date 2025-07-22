@@ -53,5 +53,10 @@ class Transaction:
         """runs the saved commands"""
         output: list[str] = []
         for x in self._cmds:
-            output.append(str(await registry.handle(x)))
+            tmp = await registry.handle(x)
+            try:
+                output.append(tmp.encode().decode())
+            except: # pylint: disable=bare-except
+                output.append(tmp)
+
         return output

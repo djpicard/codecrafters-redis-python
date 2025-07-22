@@ -26,13 +26,13 @@ class Transaction:
         self._cmds: list[str] = []
         self._active: bool    = False
 
-    async def queue(self, item: str) -> str | list[str]:
+    async def queue(self, item: str) -> str:
         """queue commands"""
         if "EXEC" in item.split("\r\n"):
             self.unset_active()
             return await self.__run__()
         self._cmds.append(item)
-        return "QUEUED"
+        return "+QUEUED\r\n"
 
     def exec(self) -> str:
         """exec the transaction"""
@@ -56,16 +56,9 @@ class Transaction:
             return x.decode(encoding, errors)
         return str(x)
 
-    async def __run__(self) -> list[str]:
+    async def __run__(self) -> str:
         """runs the saved commands"""
         output: list[str] = []
         for x in self._cmds:
-            tmp = await registry.handle(x)
-            if tmp == "OK":
-                output.append(tmp)
-            elif isinstance(tmp, bytes):
-                x:str  = tmp.decode()
-                output.append(encode(int(x)))
-            else:
-                output.append(encode(tmp))
-        return output
+            output.append(encode(x))
+        return f"*{len(output)}\r\n" + "".join(output)

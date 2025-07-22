@@ -62,11 +62,11 @@ async def handler(reader: StreamReader, writer: StreamWriter):
         if not transaction.is_active():
             if "MULTI" in message.split("\r\n"):
                 transaction.set_active()
-            resp = await registry.handle(message)
+            resp = encode(await registry.handle(message))
         else:
-            resp = await transaction.queue(message)
+            resp: str = await transaction.queue(message)
 
-        writer.write(encode(resp).encode())
+        writer.write(resp.encode())
         await writer.drain()
 
     writer.close()

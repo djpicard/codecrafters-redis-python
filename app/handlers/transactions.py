@@ -61,5 +61,8 @@ class Transaction:
         output: list[str] = []
         for x in self._cmds:
             tmp = await registry.handle(x)
-            output.append(encode(tmp))
+            if tmp == "OK":
+                output.append(tmp)
+            else:
+                output.append(encode(tmp))
         return output

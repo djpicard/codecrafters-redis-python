@@ -107,5 +107,11 @@ class KeyStore:
             self.keys[key] = Record(Mode.STRING)
         return self.keys[key].incr()
 
+    def xadd(self, key:str, entry_id:str, args:tuple[str, ...]):
+        """xadd for streams"""
+        if not key in self.keys:
+            self.keys[key] = Record(Mode.STREAM)
+        return self.keys[key].xadd(entry_id, args)
+
 # singleton instance
 keystore = KeyStore()

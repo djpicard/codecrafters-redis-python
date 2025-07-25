@@ -51,7 +51,7 @@ async def main(args):
 async def handler(reader: StreamReader, writer: StreamWriter):
     """connection handler"""
 
-    transaction: transactions.Transaction = transactions.Transaction()
+    transaction = transactions.Transaction()
 
     while True:
         data = await reader.read(1024)
@@ -59,12 +59,11 @@ async def handler(reader: StreamReader, writer: StreamWriter):
             break
 
         message = data.decode()
-        if not transaction.is_active():
-            if "MULTI" in message.split("\r\n"):
-                transaction.set_active()
-            resp = encode(await registry.handle(message))
-        else:
+        if transaction.is_active():
             resp: str = await transaction.queue(message)
+        else:
+            resp = encode(await registry.handle(message, transaction))
+
 
         writer.write(resp.encode())
         await writer.drain()

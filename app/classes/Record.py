@@ -10,6 +10,7 @@ class Mode(Enum):
     """enum for mode types"""
     STRING  = "string"
     LIST    = "list"
+    STREAM  = "stream"
 
 class Record:
     """record to contain all data needed for a redis record"""
@@ -26,6 +27,8 @@ class Record:
             case Mode.LIST:
                 self.rlist: deque[str] = deque()
                 self._waiters: deque[asyncio.Future[str]] = deque()
+            case Mode.STREAM:
+                self.stream: dict[str, tuple[str, ...]] = {}
 
     def clear_list(self) -> None:
         """clears the rlist if it exists"""
@@ -139,3 +142,8 @@ class Record:
         except ValueError:
             return Exception("-ERR value is not an integer or out of range")
         return val
+
+    def xadd(self, entry_id:str, args:tuple[str, ...]) -> bytes:
+        """xadd for streams"""
+        self.stream[entry_id] = args
+        return entry_id.encode()

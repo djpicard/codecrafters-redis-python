@@ -4,6 +4,8 @@ import inspect
 import traceback
 from typing import Callable, Dict
 
+from app.handlers.transactions import Transaction
+
 
 class CommandRegistry:
     """registry for all commands"""
@@ -19,7 +21,7 @@ class CommandRegistry:
             return func
         return decorator
 
-    async def handle(self, command_line:str) -> str:
+    async def handle(self, command_line:str, transaction: Transaction) -> str:
         """handle function call"""
         if not command_line:
             return "Empty command"
@@ -32,6 +34,9 @@ class CommandRegistry:
         if not handler:
             print(f"Unknown command: {cmd}")
             return ""
+
+        if "MULTI" == cmd:
+            transaction.set_active()
 
         try:
             if inspect.iscoroutinefunction(handler):

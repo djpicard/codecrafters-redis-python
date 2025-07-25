@@ -10,6 +10,7 @@ from app.handlers import (  # pylint: disable=unused-import
     default,
     info,
     rlist,
+    streams,
     transactions,
 )
 from app.utils.encoder import encode
